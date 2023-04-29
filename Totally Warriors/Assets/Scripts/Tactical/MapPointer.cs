@@ -8,19 +8,19 @@ public class MapPointer : MonoBehaviour
 
     private void Update()
     {
-        foreach (var unit in PlayerManager.Instance.SelectedUnits)
+        if (Input.GetMouseButtonUp(0))
         {
-            if (Input.GetMouseButtonUp(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                if (Physics.Raycast(ray, out RaycastHit hit))
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                if (hit.transform.tag == "Map")
                 {
-                    if (hit.transform.tag == "Map")
+                    foreach (var unit in PlayerManager.Instance.SelectedUnits)
                     {
-                        unit.SetUnitTarget(hit.point);
+                        unit.SetPosition(hit.point);
                     }
-                        
+
                 }
             }
         }

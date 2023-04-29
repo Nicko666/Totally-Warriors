@@ -1,19 +1,28 @@
-using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Icon : MonoBehaviour
 {
-    [SerializeField]
     private Unit _unit;
 
     [SerializeField]
     private SpriteRenderer _spriteRenderer;
-
     private float _baseHighlite;
+
+    [SerializeField]
+    private Slider[] _healthSlider;
 
     private void OnEnable()
     {
+        _unit = GetComponentInParent<Unit>();
         _baseHighlite = _spriteRenderer.color.a;
+
+        foreach (Warrior warrior in _unit.Warriors)
+        {
+            warrior.Damage = SetHealth;
+        }
+
+        SetHealth();
 
     }
 
@@ -21,7 +30,7 @@ public class Icon : MonoBehaviour
     {
         if (!_unit.IsDefeated)
         {
-            transform.position = new(_unit.GetUnitPosition().x, transform.position.y, _unit.GetUnitPosition().z);
+            transform.position = new(_unit.GetUnitCenter().x, transform.position.y, _unit.GetUnitCenter().z);
         }
 
     }
@@ -32,10 +41,7 @@ public class Icon : MonoBehaviour
     {
         _unit.OnSelected();
 
-        if (_unit.IsSelected)
-        {
-            Highlite(true);
-        }
+        Highlite(true);
 
     }
 
@@ -44,4 +50,17 @@ public class Icon : MonoBehaviour
         _spriteRenderer.color = new(_spriteRenderer.color.r, _spriteRenderer.color.g, _spriteRenderer.color.b, (value)? _baseHighlite * 2 : _baseHighlite);
     }
 
+    void SetHealth()
+    {
+        foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
+        
+        for (int n = 0; n < _unit.Warriors.Length; n++)
+        {
+            _healthSlider[n].gameObject.SetActive(true);
+            _healthSlider[n].maxValue = _unit.Warriors[n].MaxHealth;
+            _healthSlider[n].value = _unit.Warriors[n].Health;
+        }
+        
+
+    }
 }

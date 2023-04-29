@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Warrior : MonoBehaviour
 {
+    [SerializeField]
+    private int _maxHealth;
     [SerializeField]
     private int _health;
     [SerializeField]
@@ -18,56 +21,63 @@ public class Warrior : MonoBehaviour
     [SerializeField]
     private float _attacInterval;
 
+    private NavMeshAgent _agent;
+    private string _team;
     private float _lastAttacTime;
 
-    private NavMeshAgent _agent;
-
-    [SerializeField]
-    private string _team;
-    [SerializeField]
-    private Warrior _enemy;
-
     public int Health { get => _health; }
+    public int MaxHealth { get => _maxHealth; }
 
-    public Vector3 Target
-    {
-        get
-        {
-            return _agent.transform.position;
-        }
-        set
-        {
-            _agent.SetDestination(value);
-            _agent.speed = _speed;
-        }
-    }
+    private void OnEnable() => _agent = GetComponent<NavMeshAgent>();
 
-
-    public Action CurrentAction;
-
-    public Action<Warrior> Defeated;
-
-    public Action<Warrior> AttackedBy;
-
-
-    private void OnEnable()
-    {
-        _agent = GetComponent<NavMeshAgent>();
-        _agent.speed = _speed;
-        CurrentAction = DetectEnemy;
-        CurrentAction += AttackOnSight;
-        CurrentAction += Move;
-    }
-
+    public bool TargetReached = true;
 
     private void Update()
     {
-        CurrentAction();
+        if (Enemy.Length > 0)
+        {
+            DetectEnemy(Enemy);
+        }
+
+        if (!TargetReached)
+        {
+            //if (_agent.destination == _agent.nextPosition) TargetReached = true;
+            if (_agent.nextPosition == _agent.pathEndPosition) TargetReached = true;
+
+        }
     }
 
-    public void SetWarrior(string name, Color color)
+    public string GetWarriorTeam => _team;
+    
+    public Warrior[] Enemy
     {
-        _team = name;
+        get
+        {
+            var hits = Physics.SphereCastAll(transform.position, _radius, Vector3.forward, _radius);
+
+            List<Warrior> enemies = new();
+
+            if (hits is null) enemies.ToArray();
+
+            foreach (var hit in hits)
+            {
+                Warrior warior;
+                if (hit.collider.tag == "Warrior")
+                {
+                    warior = hit.collider.GetComponent<Warrior>();
+                    if (warior.GetWarriorTeam != _team)
+                        enemies.Add(warior);
+                }
+
+            }
+
+            return enemies.ToArray();
+        }
+    }
+
+    public void SetWarrior(string team, Color color)
+    {
+        _team = team;
 
         if (_armor is null) return;
 
@@ -77,90 +87,59 @@ public class Warrior : MonoBehaviour
         }
     }
 
-    public string GetWarriorTeam()
+    public Warrior SelectClosest(Warrior[] warriors)
     {
-        return _team;
-    }
+        var result = warriors[0];
 
-    public void DetectEnemy()
-    {
-        var hits = Physics.SphereCastAll(transform.position, _radius, Vector3.forward, _radius);
-
-        if(hits is null) return;
-
-        List<Warrior> enemies = new();
-
-        foreach (var hit in hits)
+        foreach (var warrior in warriors)
         {
-            Warrior warior;
-            if (hit.collider.tag == "Warrior")
-            {
-                warior = hit.collider.GetComponent<Warrior>();
-                if (warior.GetWarriorTeam() != this.GetWarriorTeam())
-                    enemies.Add(warior);
-            }
-                
-        }
+            //warrior._agent.pa
 
-        if (enemies.Count == 0)
-        {
-            _enemy = null;
-            return; 
-        }
-
-
-        //select closest
-
-        _enemy = enemies[0];
-
-        foreach (var enemy in enemies)
-        {
             if (
-                (enemy.transform.position - gameObject.transform.position).sqrMagnitude <
-                (_enemy.transform.position - gameObject.transform.position).sqrMagnitude
+                (warrior.transform.position - this.transform.position).sqrMagnitude <
+                (result.transform.position - warrior.transform.position).sqrMagnitude
                 )
-            {
-                _enemy = enemy;
-            }
+                result = warrior;
+
         }
 
+        return result;
     }
 
-    public void AttackOnSight()
+    public void MoveTo(Vector3 target)
     {
-        if (_enemy == null)
-        {
-            return;
-        }
+        _agent.SetDestination(target); 
+        TargetReached = false;
+    }
 
-        RotateTo(_enemy.transform.position);
+    public void MoveTo(Warrior enemy)
+    {
+        _agent.SetDestination(enemy.transform.position);
+    }
+
+    public void StopMovingOnDetect(Warrior enemy)
+    {
+        if ((enemy.transform.position - transform.position).sqrMagnitude < _radius * _radius)
+        {
+            _agent.SetDestination(this.transform.position);
+        }
+    }
+
+    public void Attack(Warrior enemy)
+    {
+        if (!Enemy.Any(e => e = enemy)) return;
+
+        RotateTo(enemy.transform.position);
 
         if (_lastAttacTime + _attacInterval < Time.time)
         {
-            _enemy.TakeDamage(this, _strength);
+            enemy.TakeDamage(this, _strength);
             _lastAttacTime = Time.time;
         }
 
     }
 
-    public void Move()
-    {
-        if (_enemy == null)
-        {
-            _agent.speed = _speed;
-
-            return;
-        }
-
-
-        if (Target == _enemy.transform.position)
-        {
-            _agent.speed = 0;
-        }
-
-    }
-
-    public void RotateTo(Vector3 position)
+    void RotateTo(Vector3 position)
     {
         Vector3 direction = position - transform.position;
 
@@ -170,7 +149,7 @@ public class Warrior : MonoBehaviour
 
     }
 
-    public void TakeDamage(Warrior warior, int strength)
+    void TakeDamage(Warrior warior, int strength)
     {
         _health -= strength;
 
@@ -183,9 +162,12 @@ public class Warrior : MonoBehaviour
             gameObject.SetActive(false);
         }
 
-        AttackedBy(warior);
+        Damage();
     }
 
+    public Action<Warrior> Defeated;
+    public Action Damage;
+    public Action<Warrior[]> DetectEnemy;
 
     //private void OnDrawGizmos()
     //{

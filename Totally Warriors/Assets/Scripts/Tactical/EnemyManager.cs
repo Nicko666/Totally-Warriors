@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyManager : Singleton<EnemyManager>
@@ -14,7 +12,7 @@ public class EnemyManager : Singleton<EnemyManager>
     {
         foreach (var unit in _units)
         {
-            unit.SetUnitTarget(_target.position);
+            unit.SetPosition(_target.position);
         }
     }
 }

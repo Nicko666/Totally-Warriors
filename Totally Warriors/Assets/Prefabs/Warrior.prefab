@@ -87,6 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b56846590a76c41b5453cef8e7130a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHealth: 10
   _health: 10
   _strength: 2
   _radius: 2
@@ -95,8 +96,7 @@ MonoBehaviour:
   - {fileID: 3648532296843750107}
   - {fileID: 5437990889803127016}
   _attacInterval: 2
-  _team: 
-  _enemy: {fileID: 0}
+  TargetReached: 1
 --- !u!135 &411235115694839458
 SphereCollider:
   m_ObjectHideFlags: 0

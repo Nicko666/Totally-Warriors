@@ -8,102 +8,13 @@ public class Unit : MonoBehaviour
     [SerializeField]
     private List<Warrior> _warriors;
     [SerializeField]
-    private Transform _target;
-    [SerializeField]
-    private bool _holdPositions;
-    [SerializeField]
     private string _team;
     [SerializeField]
     private Color _color;
 
     private IUnitPositionGenerator _positionGenerator;
 
-
-    private void OnEnable()
-    {
-        _positionGenerator = GetComponent<IUnitPositionGenerator>();
-        
-        _target.GetOrAddComponent<Target>().OnChangePosition += (target) => SetWariorsTarget(target.position);
-        
-
-        foreach (var warior in _warriors)
-        {
-            warior.Defeated += OnWariorDefeated;
-
-            warior.AttackedBy += OnAttaked;
-
-            warior.SetWarrior(_team, _color);
-
-        }
-
-    }
-
-    public void OnWariorDefeated(Warrior warior)
-    {
-        _warriors.Remove(warior);
-
-        if(IsDefeated)
-        {
-            Debug.Log($"{gameObject.name} was defeated");
-            IsSelected = false;
-        }
-
-    }
-
-    public void SetUnitTarget(Vector3 position)
-    {
-        _target.transform.position = position;
-    }
-
-    public void SetWariorsTarget(Vector3 center)
-    {
-        Debug.Log("SetWariorsTarget");
-        var positions = _positionGenerator.GetPosition(_warriors.Count);
-        for (int i = 0; i < positions.Length; i++)
-        {
-            _warriors[i].Target = center + (positions[i] * 1);
-        }
-    }
-
-    public void SetWariorsTarget(Unit enemy)
-    {
-        List<Vector3> positions = new();
-            
-        foreach(Warrior warior in enemy._warriors)
-            positions.Add(warior.transform.position);
-
-        int enemyNumber = Mathf.Clamp(0, 0, positions.Count);
-
-        foreach (var warior in _warriors)
-        {
-            warior.Target = (positions[enemyNumber]);
-            enemyNumber++;
-        }
-    }
-
-    public void SetWariorsTarget(Warrior warrior)
-    {
-        foreach (var war in _warriors)
-        {
-            war.Target = (warrior.transform.position);
-        }
-    }
-
-    public Vector3 GetUnitPosition()
-    {
-        Vector3 center = Vector3.zero;
-
-        foreach (var warior in _warriors)
-        {
-            center += warior.transform.position;
-        }
-
-        center /= _warriors.Count;
-
-        return center;
-    }
-
-    public bool IsSelected
+    bool IsSelected
     {
         get
         {
@@ -125,7 +36,23 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool IsPlayer() => PlayerManager.Instance.PlayerUnits.Any(u => u == this);
+
+    public Warrior[] Warriors => _warriors.ToArray();
+
+    private void OnEnable()
+    {
+        _positionGenerator = GetComponent<IUnitPositionGenerator>();
+
+        foreach (var warior in _warriors)
+        {
+            warior.SetWarrior(_team, _color);
+
+            warior.DetectEnemy += OnEnemyDetection;
+            warior.Defeated += OnWarriorDefeated;
+
+        }
+
+    }
 
     public void OnSelected()
     {
@@ -135,54 +62,111 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            Attacked();
+            foreach (Unit unit in PlayerManager.Instance.SelectedUnits)
+                unit.SetEnemy(this);
         }
     }
 
-    public void Attacked()
+    public bool TargetReached => _warriors.All(w => w.TargetReached);
+
+    [SerializeField]
+    private Unit _enemy;
+
+    public Unit Enemy
     {
-        foreach(var unit in PlayerManager.Instance.SelectedUnits)
+        get
         {
-            unit.Attack(this);
+            if (_enemy != null)
+                return (_enemy._warriors.Count < 1) ? null : _enemy;
+            else return null;
         }
     }
 
-    public void OnAttaked(Warrior warrior)
+    public void SetEnemy(Unit enemy)
     {
-        if (_holdPositions) return;
+        List<Vector3> positions = new();
 
-        foreach(var war in _warriors)
+        _enemy = enemy;
+
+        foreach (Warrior warrior in _warriors)
         {
-            SetWariorsTarget(warrior);
+            warrior.TargetReached = true;
+            warrior.MoveTo(warrior.SelectClosest(enemy._warriors.ToArray()));
         }
+            
     }
 
-    public void Attack(Unit unit)
+    public void SetPosition(Vector3 position)
     {
-        SetWariorsTarget(unit);
+        var positions = _positionGenerator.GetPosition(_warriors.Count);
+        for (int i = 0; i < positions.Length; i++)
+        {
+            _warriors[i].MoveTo(position + (positions[i] * 1));
+        }
+
+        _enemy = null;
     }
 
-    public bool IsDefeated => _warriors.Count < 1;
+    public void OnEnemyDetection(Warrior[] enemies)
+    {
+        List<Warrior> specialEnemies = new();
+        if (Enemy != null)
+            foreach (var enemy in enemies)
+                if (Enemy._warriors.Any(w => w = enemy)) specialEnemies.Add(enemy);
+
+        foreach (var warrior in _warriors)
+        {
+            var targetEnemy = warrior.SelectClosest(enemies);
+
+            if (TargetReached)
+            {
+                warrior.MoveTo(targetEnemy);
+                if (Enemy == null) warrior.StopMovingOnDetect(targetEnemy);
+
+            }
+
+            if (Enemy != null)
+            {
+                warrior.MoveTo(warrior.SelectClosest(Enemy._warriors.ToArray()));
+                warrior.StopMovingOnDetect(warrior.SelectClosest(Enemy._warriors.ToArray()));
+            }
+
+            warrior.Attack(targetEnemy);
+
+            if (specialEnemies.Count > 0)
+                warrior.Attack(warrior.SelectClosest(specialEnemies.ToArray()));
+        }
+
+    }
+
+
+
+    public void OnWarriorDefeated(Warrior warior)
+    {
+        _warriors.Remove(warior);
+
+        if(_warriors.Count == 0)
+        {
+            Debug.Log($"{gameObject.name} was defeated");
+            IsSelected = false;
+        }
+
+    }
+    
+    public Vector3 GetUnitCenter()
+    {
+        Vector3 center = Vector3.zero;
+
+        foreach (var warior in _warriors)
+        {
+            center += warior.transform.position;
+        }
+
+        center /= _warriors.Count;
+
+        return center;
+    }
+
+    public bool IsDefeated => _warriors.Count == 0;
 
 }
-
-
-    //private void Start()
-    //{
-    //    WarriorsStartPosition();
-
-    //}
-
-    //private void WarriorsStartPosition()
-    //{
-    //    if( _warriors.Count > 0 )
-    //    {
-    //        var positions = _positionGenerator.GetPosition(_warriors.Count);
-
-    //        for (int i = 0; i < positions.Length; i++)
-    //        {
-    //            _warriors[i].gameObject.transform.position = transform.position + (positions[i] * 1);
-    //        }
-
-    //    }
-    //}
