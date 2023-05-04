@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CircleGenerator : MonoBehaviour, IUnitPositionGenerator
+public class CirclePositions : MonoBehaviour, IWarriorsPositions
 {
-    public Vector3[] GetPosition(int count)
+    public Vector3[] GetPositions(int count)
     {
         float step = (Mathf.Deg2Rad * 360) / count;
         List<Vector3> result = new List<Vector3>();

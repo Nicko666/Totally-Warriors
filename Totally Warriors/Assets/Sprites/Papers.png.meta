@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b4319ba301ea7bf4fbe56f733558ef19
+guid: c6e69012ac8a97e4bb62ce6928530425
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -67,7 +67,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -117,49 +117,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IconImages_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 200
-        width: 200
-        height: 200
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 13315b84aec97bd42b62ac95a790e787
-      internalID: -327999297
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IconImages_1
-      rect:
-        serializedVersion: 2
-        x: 200
-        y: 200
-        width: 200
-        height: 200
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d74695e6b49377549af61f2ef5b90227
-      internalID: 440086584
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: IconImages_2
+      name: Papers_0
       rect:
         serializedVersion: 2
         x: 0
@@ -173,14 +131,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8c8b9e73cb1e3524ebc2ee0a365a688d
-      internalID: -1384544111
+      spriteID: 9d6cabf4a1c4238438be4a9672d2273d
+      internalID: 1027017463
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: IconImages_3
+      name: Papers_1
       rect:
         serializedVersion: 2
         x: 200
@@ -194,8 +152,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9617e7bdd1e518c4ab64bb36fc1fda84
-      internalID: 1462456997
+      spriteID: 973796645f4a96d47a41b9854207441d
+      internalID: -306282001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Papers_2
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 0
+        width: 200
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d51b49418934a3d44acdcb94ba6641da
+      internalID: 346112606
       vertices: []
       indices: 
       edges: []
@@ -203,7 +182,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: f975b1496037c8449837e90c6426cc1c
+    spriteID: 924608398e800a143afb83bad12b91fe
     internalID: 0
     vertices: []
     indices: 
@@ -211,10 +190,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      IconImages_0: -327999297
-      IconImages_1: 440086584
-      IconImages_2: -1384544111
-      IconImages_3: 1462456997
+      Papers_0: 1027017463
+      Papers_1: -306282001
+      Papers_2: 346112606
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

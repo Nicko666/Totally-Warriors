@@ -1,172 +1,198 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
     [SerializeField]
     private List<Warrior> _warriors;
-    [SerializeField]
-    private string _team;
-    [SerializeField]
-    private Color _color;
 
-    private IUnitPositionGenerator _positionGenerator;
-
-    bool IsSelected
-    {
-        get
-        {
-            return PlayerManager.Instance.SelectedUnits.Any(u => u == this);
-        }
-
-        set
-        {
-            if (value)
-            {
-                if (!PlayerManager.Instance.SelectedUnits.Any(u => u == this))
-                    PlayerManager.Instance.SelectedUnits.Add(this);
-            }
-            else
-            {
-                if (PlayerManager.Instance.SelectedUnits.Any(u => u == this))
-                    PlayerManager.Instance.SelectedUnits.Remove(this);
-            }
-        }
-    }
-
-
+    private IWarriorsPositions _warriorsPositions;
+    
+    public string Name { get; private set; }
+    public Color Color { get; private set; }
     public Warrior[] Warriors => _warriors.ToArray();
+
+
+    public Action Created;
+
+    public Action<bool> Selected;
+
+    public Action Defeated;
+
+    public Action CurrentMod;
 
     private void OnEnable()
     {
-        _positionGenerator = GetComponent<IUnitPositionGenerator>();
-
         foreach (var warior in _warriors)
         {
-            warior.SetWarrior(_team, _color);
-
-            warior.DetectEnemy += OnEnemyDetection;
             warior.Defeated += OnWarriorDefeated;
 
         }
 
+        _warriorsPositions = GetComponent<CirclePositions>();
+
+        var positions = _warriorsPositions.GetPositions(_warriors.Count);
+
+        for (int i = 0; i < positions.Length; i++)
+        {
+            _warriors[i].transform.position += (positions[i] * 1);
+        }
+
+        CurrentMod = DefaultMod;
+
+        Debug.Log("Default Mod");
+
     }
 
-    public void OnSelected()
+    private void Update() => CurrentMod();
+
+    public void SetUnit(string team, Color color)
     {
-        if (PlayerManager.Instance.PlayerUnits.Any(u => u == this))
+        Name = team;
+        Color = color;
+
+        foreach (var warior in _warriors)
         {
-            IsSelected = true;
+            warior.SetWarrior(Name, Color);
         }
-        else
-        {
-            foreach (Unit unit in PlayerManager.Instance.SelectedUnits)
-                unit.SetEnemy(this);
-        }
+
+        Created();
     }
-
-    public bool TargetReached => _warriors.All(w => w.TargetReached);
-
-    [SerializeField]
-    private Unit _enemy;
-
-    public Unit Enemy
+        
+    public void MoveTo(Vector3 position)
     {
-        get
-        {
-            if (_enemy != null)
-                return (_enemy._warriors.Count < 1) ? null : _enemy;
-            else return null;
-        }
-    }
+        var positions = _warriorsPositions.GetPositions(_warriors.Count);
 
-    public void SetEnemy(Unit enemy)
-    {
-        List<Vector3> positions = new();
-
-        _enemy = enemy;
-
-        foreach (Warrior warrior in _warriors)
-        {
-            warrior.TargetReached = true;
-            warrior.MoveTo(warrior.SelectClosest(enemy._warriors.ToArray()));
-        }
-            
-    }
-
-    public void SetPosition(Vector3 position)
-    {
-        var positions = _positionGenerator.GetPosition(_warriors.Count);
         for (int i = 0; i < positions.Length; i++)
         {
             _warriors[i].MoveTo(position + (positions[i] * 1));
         }
-
-        _enemy = null;
     }
 
-    public void OnEnemyDetection(Warrior[] enemies)
+
+
+    void DefaultMod()
     {
-        List<Warrior> specialEnemies = new();
-        if (Enemy != null)
-            foreach (var enemy in enemies)
-                if (Enemy._warriors.Any(w => w = enemy)) specialEnemies.Add(enemy);
+        List<Warrior> detectedEnemyes = new();
 
-        foreach (var warrior in _warriors)
+        foreach (Warrior warrior in _warriors)
         {
-            var targetEnemy = warrior.SelectClosest(enemies);
+            detectedEnemyes.AddRange(warrior.DetectedEnemies);
+        }
 
-            if (TargetReached)
+        if (detectedEnemyes.Count < 1)
+        {
+            //MoveTo(GetUnitCenter);
+            return;
+        }
+
+        foreach(Warrior warrior in _warriors)
+        {
+            if(warrior.DetectedEnemies.Count > 0)
             {
-                warrior.MoveTo(targetEnemy);
-                if (Enemy == null) warrior.StopMovingOnDetect(targetEnemy);
-
+                warrior.StopAndAttack(warrior.SelectClosest(warrior.DetectedEnemies));
             }
-
-            if (Enemy != null)
+            else
             {
-                warrior.MoveTo(warrior.SelectClosest(Enemy._warriors.ToArray()));
-                warrior.StopMovingOnDetect(warrior.SelectClosest(Enemy._warriors.ToArray()));
+                warrior.MoveTo(warrior.SelectClosest(detectedEnemyes).gameObject.transform.position);
             }
+        }
+    }
 
-            warrior.Attack(targetEnemy);
 
-            if (specialEnemies.Count > 0)
-                warrior.Attack(warrior.SelectClosest(specialEnemies.ToArray()));
+
+    public void Destination(Vector3 target)
+    {
+        MoveTo(target);
+        CurrentMod = DestinationMod;
+
+        Debug.Log("Destination Mod");
+    }
+
+    void DestinationMod()
+    {
+        if (_warriors.All(w => w.GotDestination))
+        {
+            Debug.Log("Default Mod");
+
+            CurrentMod = DefaultMod;
+            return;
+        }
+
+        foreach(var warrior in _warriors)
+        {
+            if(warrior.GotDestination && warrior.DetectedEnemies.Count > 0)
+            {
+                warrior.StopAndAttack(warrior.SelectClosest(warrior.DetectedEnemies));
+            }
         }
 
     }
 
 
+    Unit _enemy;
 
-    public void OnWarriorDefeated(Warrior warior)
+    public void Enemy(Unit enemy)
+    {
+        _enemy = enemy;
+        Debug.Log("Enemy Mod");
+        CurrentMod = EnemyMod;
+    }
+
+    void EnemyMod()
+    {
+        if (_enemy.Warriors.Length < 1)
+        {
+            Debug.Log("Default Mod");
+            CurrentMod = DefaultMod;
+            return;
+        }
+
+        foreach (var warrior in _warriors)
+        {
+            if (warrior.DetectedEnemies.Any(e => _enemy.Warriors.Contains(e)))
+            {
+                warrior.StopAndAttack(warrior.SelectClosest(_enemy.Warriors));
+            }
+            else
+            {
+                warrior.MoveTo(warrior.SelectClosest(_enemy.Warriors).transform.position);
+            }
+
+        }
+    }
+
+
+    
+    void OnWarriorDefeated(Warrior warior)
     {
         _warriors.Remove(warior);
 
-        if(_warriors.Count == 0)
+        if(_warriors.Count < 1)
         {
-            Debug.Log($"{gameObject.name} was defeated");
-            IsSelected = false;
+            Defeated();
         }
 
     }
     
-    public Vector3 GetUnitCenter()
+    public Vector3 GetUnitCenter
     {
-        Vector3 center = Vector3.zero;
-
-        foreach (var warior in _warriors)
+        get
         {
-            center += warior.transform.position;
+            Vector3 center = Vector3.zero;
+
+            foreach (var warior in _warriors)
+            {
+                center += warior.transform.position;
+            }
+
+            center /= _warriors.Count;
+
+            return center;
         }
-
-        center /= _warriors.Count;
-
-        return center;
+        
     }
-
-    public bool IsDefeated => _warriors.Count == 0;
 
 }

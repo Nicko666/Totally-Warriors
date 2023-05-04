@@ -55,7 +55,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 0.00001
+  m_Height: 0.5
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 1
@@ -87,15 +87,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09b56846590a76c41b5453cef8e7130a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 10
-  _health: 10
-  _strength: 2
+  _maxHealth: 50
+  _health: 50
+  _strength: 1
   _radius: 2
   _speed: 3
   _armor:
   - {fileID: 3648532296843750107}
   - {fileID: 5437990889803127016}
   _attacInterval: 2
+  _agent: {fileID: 2002788106177546533}
   TargetReached: 1
 --- !u!135 &411235115694839458
 SphereCollider:
