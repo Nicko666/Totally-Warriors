@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1062560545246930409
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8767094224958247860}
+  - component: {fileID: -6073556756625398138}
+  m_Layer: 0
+  m_Name: 1_Knight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8767094224958247860
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062560545246930409}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6073556756625398138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062560545246930409}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6d52d0d391ce474ab8f06ffa549dfd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <WarriorsHealath>k__BackingField: 
+  UnitType: {fileID: 11400000, guid: 8563301e42805914d80a71b1fc58dfc7, type: 2}
+  WarriorPreefab: {fileID: 4849324783783834770, guid: 2788f3324abd70342a9d736dd5615fdb, type: 3}
+  _tacticalPreefab: {fileID: 2524040837764609157, guid: 01bf9dabf87861c4a8eecedd84148433, type: 3}
+  _unitIconPreefab: {fileID: 7457906460960222688, guid: 6b9e91838f531024fa206a87bac578cc, type: 3}
+  <Name>k__BackingField: 
+  <Color>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
+  <UnitObj>k__BackingField: {fileID: 0}

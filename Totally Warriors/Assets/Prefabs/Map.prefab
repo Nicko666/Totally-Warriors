@@ -697,11 +697,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7063ec7e7846f348ab4c88a65378070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _upPositions:
+  <UpPositions>k__BackingField:
   - {fileID: 764942141}
   - {fileID: 1690543517}
   - {fileID: 1920348657}
-  _downPositions:
+  <DownPositions>k__BackingField:
   - {fileID: 1576176661}
   - {fileID: 1773138316}
   - {fileID: 303148457}

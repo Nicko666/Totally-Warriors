@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LinePositions : MonoBehaviour, IWarriorsPositions
+public class LinePositions : MonoBehaviour, IUnitFormation
 {
     public Vector3[] GetPositions(int count)
     {

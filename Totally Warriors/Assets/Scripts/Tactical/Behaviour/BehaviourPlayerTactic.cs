@@ -1,73 +1,94 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BehaviourPlayerTactic : MonoBehaviour, IBehaviorTactical
 {
-    private List<Unit> SelectedUnits;
+    Character _character;
+    List<Unit> _selectedUnits;
+    IUnitFormation _unitFormation;
 
-    private SceneTactical sceneTactical;
-
-    private void OnEnable()
+    public void Enable(List<Unit> units)
     {
-        sceneTactical = SceneTactical.Instance;
+        _character = GetComponent<Character>();
+        if (_selectedUnits == null) _selectedUnits = new List<Unit>();
+        _unitFormation = GetComponent<CircleFormation>();
 
-        SelectedUnits = new List<Unit>();
-        sceneTactical.MapClick += OnMapMouseUp;
-        sceneTactical.UnitClick += OnUnitPointerClick;
-    }
-
-    private void OnDisable()
-    {
-        if (sceneTactical != null)
+        foreach (Unit unit in units)
         {
-            sceneTactical.MapClick -= OnMapMouseUp;
-            sceneTactical.UnitClick -= OnUnitPointerClick;
-
-        }
-
-    }
-
-    void OnMapMouseUp(Vector3 position)
-    {
-        foreach (var unit in SelectedUnits)
-        {
-            unit.Destination(position);
+            unit.UnitObj.HoldPositions = true;
         }
     }
 
-    void OnUnitPointerClick(Unit unit)
+    public void OnMapClick(Vector3 position)
     {
-        if (unit.Name == SceneTactical.Instance.CharacterPlayer.Name)
+        if (_selectedUnits.Count > 0)
         {
-            OnSelectAlly(unit);
+            var positions = _unitFormation.GetPositions(_selectedUnits.Count);
+            for (int i = 0; i < positions.Length; i++)
+            {
+                _selectedUnits[i].UnitObj.Destination(position + (positions[i] * 1));
+            }
+        }
+        
+    }
+
+    public void OnUnitClick(Unit unit)
+    {
+        if (unit.Name == _character.Name)
+        {
+            OnSelectAlly();
         }
         else
         {
-            OnSelectEnemy(unit);
+            OnSelectEnemy();
         }
 
-    }
-
-    void OnSelectEnemy(Unit enemy)
-    {
-        foreach (var unit in SelectedUnits)
+        void OnSelectEnemy()
         {
-            unit.Enemy(enemy);
+            foreach (var myunit in _selectedUnits)
+            {
+                myunit.UnitObj.Enemy(unit.UnitObj);
+            }
         }
 
-    }
-
-    void OnSelectAlly(Unit unit)
-    {
-        if (SelectedUnits.Contains(unit))
+        void OnSelectAlly()
         {
-            unit.Selected(false);
-            SelectedUnits.Remove(unit);
-            return;
+            if (_selectedUnits.Contains(unit))
+            {
+                SelectUnit(unit, false);
+            }
+            else
+            {
+                SelectUnit(unit, true);
+            }
         }
 
-        unit.Selected(true);
-        SelectedUnits.Add(unit);
+    }
+
+    public void OnUnitDefeated(Unit unit)
+    {
+        if (_selectedUnits.Contains(unit))
+        {
+            SelectUnit(unit, false);
+        }
+    }
+
+    void SelectUnit(Unit unit, bool value)
+    {
+        unit.SelectedAction(value);
+
+        if(value)
+        {
+            _selectedUnits.Add(unit);
+            unit.UnitDefeated += OnUnitDefeated;
+        }
+        else
+        {
+            _selectedUnits.Remove(unit);
+            unit.UnitDefeated -= OnUnitDefeated;
+        }
 
     }
+
 }
