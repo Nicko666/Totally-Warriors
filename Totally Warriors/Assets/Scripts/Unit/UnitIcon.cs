@@ -1,50 +1,50 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.UI.CanvasScaler;
 
 public class UnitIcon : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] CanvasGroup _canvasGroup;
     [SerializeField] Slider[] _healthSlider;
     [SerializeField] Image _image;
-    UnitTacticalObject _followTarget;
-    Unit _unit;
+    
+    UnitTObject _unitTO;
+
+    public Action<UnitTObject> Click;
 
     private void Update()
     {
-        if (_followTarget != null)
-        transform.position = _followTarget.GetUnitCenter + Vector3.up;    
+        if (_unitTO != null & _unitTO.Warriors.Count > 0)
+            transform.position = _unitTO.UnitCenter + Vector3.up;
     }
 
-    public void SetUnitIcon(Unit unit)
+    public void Inst(UnitType unitType, UnitTObject unitTO)
     {
-        _followTarget = unit.UnitObj;
-        _image.sprite = unit.UnitType.Icon;
-        _unit = unit;
+        _unitTO = unitTO;
+        _image.sprite = unitType.Icon;
 
         foreach (var slider in _healthSlider)
         {
-            slider.fillRect.gameObject.GetComponent<Image>().color = unit.Color;
-            slider.maxValue = unit.UnitType.MaxHealth;
+            slider.fillRect.gameObject.GetComponent<Image>().color = unitTO.Color;
+            slider.maxValue = unitType.MaxHealth;
         }
 
-        UpdateHealthData(unit.WarriorsHealath);
+        _unitTO.Selected += Highlite;
+        _unitTO.TakeDamageAction += UpdateHealthData;
+        _unitTO.DefeatedAction += OnDefeated;
 
-        unit.SelectedAction += Highlite;
-        unit.UnitTakeDamageAction += UpdateHealthData;
-        unit.UnitDefeated += OnDefeated;
+        UpdateHealthData(unitTO.WarriorsHealth);
+
     }
 
     public void UpdateHealthData(List<int> health)
     {
         foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
-        
-        if (health.Count < 1)
-        {
-            return;
-        }
-        
+
         for (int n = 0; n < health.Count; n++)
         {
             _healthSlider[n].gameObject.SetActive(true);
@@ -61,11 +61,17 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        _unit.ClickAction(_unit);
+        Click?.Invoke(_unitTO);
     }
 
-    public void OnDefeated(Unit unit)
+    public void OnDefeated(UnitTObject unitTObject)
     {
+        foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
+
+        unitTObject.Selected -= Highlite;
+        unitTObject.TakeDamageAction -= UpdateHealthData;
+        unitTObject.DefeatedAction -= OnDefeated;
+
         Destroy(gameObject);
     }
 

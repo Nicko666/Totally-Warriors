@@ -90,9 +90,8 @@ MonoBehaviour:
   - {fileID: 3648532296843750107}
   - {fileID: 5437990889803127016}
   _agent: {fileID: 2002788106177546533}
-  <Name>k__BackingField: 
-  _color: {r: 0, g: 0, b: 0, a: 0}
   _floatingNumber: {fileID: 1728452943847355427, guid: 03eabc30a882f8441a7ec7470de244da, type: 3}
+  destanationLandMarck: {fileID: 6424360509748262996, guid: d606441dbe8d8cd4fb32d73ead13f61a, type: 3}
 --- !u!135 &411235115694839458
 SphereCollider:
   m_ObjectHideFlags: 0

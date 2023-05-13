@@ -5,35 +5,16 @@ using UnityEngine.AI;
 
 public class Warrior : MonoBehaviour
 {
-    [Header("Fill in Preefab")]
     [SerializeField] SpriteRenderer[] _armor;
     [SerializeField] NavMeshAgent _agent;
-    
-    [field: Header("InGame Fields")]
-    [field: SerializeField] public string Name { get; private set; }
-    [SerializeField] Color _color;
+    [SerializeField] FloatingNunber _floatingNumber;
+    [SerializeField] LandMarck destanationLandMarck;
+
+    Color _color;
     UnitType _unitType;
-
-    public int Health { get; private set; }
-
     float _lastAttacTime;
-    
-    public void SetWarrior(string name, Color color, UnitType unitType, int health)
-    {
-        Name = name;
-        _color = color;
-        _unitType = unitType;
-        Health = health;
-
-        //paint armor
-        if (_armor is null) return;
-        foreach (var armor in _armor)
-        {
-            armor.color = color;
-        }
-
-    }
-
+    public string Name { get; private set; }
+    public int Health { get; private set; }
     public List<Warrior> DetectedEnemies
     {
         get
@@ -52,7 +33,7 @@ public class Warrior : MonoBehaviour
                 Warrior warior;
                 if (hit.gameObject.TryGetComponent<Warrior>(out warior))
                 {
-                    if (warior.Name != Name)
+                    if (warior.Name != Name && Health > 0)
                     {
                         enemies.Add(warior);
 
@@ -62,6 +43,25 @@ public class Warrior : MonoBehaviour
 
             return enemies;
         }
+    }
+    public bool GotDestination => _agent.remainingDistance < 0.01f;
+
+    public Action TakeDamageAction;
+
+    public void SetWarrior(string name, Color color, UnitType unitType, int health)
+    {
+        Name = name;
+        _color = color;
+        _unitType = unitType;
+        Health = health;
+
+        //paint armor
+        if (_armor is null) return;
+        foreach (var armor in _armor)
+        {
+            armor.color = color;
+        }
+
     }
 
     public Warrior SelectClosest(List<Warrior> warriors)
@@ -88,8 +88,6 @@ public class Warrior : MonoBehaviour
         _agent.SetDestination(target); 
     }
 
-    public bool GotDestination => _agent.remainingDistance < 0.01f;
-
     public void StopAndAttack(Warrior enemy)
     {
         if (enemy == null) return;
@@ -100,6 +98,7 @@ public class Warrior : MonoBehaviour
 
         if (_lastAttacTime + _unitType.StrikeInterval < Time.time)
         {
+            AttackAnimation();
             enemy.TakeDamage(this, _unitType.Strength);
             _lastAttacTime = Time.time;
         }
@@ -119,35 +118,44 @@ public class Warrior : MonoBehaviour
     void TakeDamage(Warrior warrior, int strength)
     {
         Health -= strength;
-
-        InstantiateFloatingNumber(-strength);
+        TakeDamageAnimation(-strength);
+        TakeDamageAction?.Invoke();
 
         if (Health <= 0)
         {
-            gameObject.SetActive(false);
-            DefeatedAction(this);
             Health = 0;
+            DeathAnimation();
         }
 
-        TakeDamageByAction(warrior);
     }
 
-    public Action<Warrior> TakeDamageByAction;
-    public Action<Warrior> DefeatedAction;
-
-
-    [SerializeField] FloatingNunber _floatingNumber;
-
-    public void InstantiateFloatingNumber(int number)
+    void TakeDamageAnimation(int number)
     {
-        FloatingNunber fn = Instantiate(_floatingNumber, transform.position, new()).GetComponent<FloatingNunber>();
-        fn.SetNumber(number, _color);
+        InstantiateFloatingNumber(number);
+
+        void InstantiateFloatingNumber(int number)
+        {
+            FloatingNunber fn = Instantiate(_floatingNumber, transform.position, new()).GetComponent<FloatingNunber>();
+            fn.SetNumber(number, _color);
+        }
 
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.DrawWireSphere(transform.position, _radius);
-    //}
+    void DeathAnimation()
+    {
+        gameObject.SetActive(false);
+    }
+
+    void AttackAnimation()
+    {
+
+
+    }
+
+    public void ShowDestanation() 
+    {
+        Instantiate(destanationLandMarck, _agent.destination, destanationLandMarck.transform.rotation);
+
+    }
 
 }

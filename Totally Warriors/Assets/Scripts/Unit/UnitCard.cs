@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -5,44 +6,38 @@ using UnityEngine.UI;
 
 public class UnitCard : MonoBehaviour, IPointerClickHandler
 {
-    [field: Header("Fill in Preefab")]
     [SerializeField] Slider[] _healthSlider;
     [SerializeField] Image _image;
     [SerializeField] Image _x_image;
     [SerializeField] CanvasGroup _canvasGroup;
-    Unit _unit;
-
+    
+    UnitTObject _unitTO;
     bool active;
 
-    public void SetUnitCard(Unit unit)
+    public Action<UnitTObject> Click;
+
+    public void Inst(UnitType unitType, UnitTObject unitTO)
     {
-        _unit = unit;
-        _image.sprite = unit.UnitType.Icon;
-        _x_image.enabled = false;
+        _unitTO = unitTO;
+        _image.sprite = unitType.Icon;
 
         foreach (var slider in _healthSlider)
         {
-            slider.fillRect.gameObject.GetComponent<Image>().color = unit.Color;
-            slider.maxValue = unit.UnitType.MaxHealth;
+            slider.fillRect.gameObject.GetComponent<Image>().color = unitTO.Color;
+            slider.maxValue = unitType.MaxHealth;
         }
 
-        UpdateHealthData(unit.WarriorsHealath);
-
-        unit.SelectedAction += Highlite;
-        unit.UnitTakeDamageAction += UpdateHealthData;
+        UpdateHealthData(unitTO.WarriorsHealth);
+        _unitTO.Selected += Highlite;
+        _unitTO.TakeDamageAction += UpdateHealthData;
+        _unitTO.DefeatedAction += OnDefeated;
 
         active = true;
-        unit.UnitDefeated += OnDefeated;
     }
 
     public void UpdateHealthData(List<int> health)
     {
         foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
-
-        if (health.Count < 1)
-        {
-            return;
-        }
 
         for (int n = 0; n < health.Count; n++)
         {
@@ -62,14 +57,22 @@ public class UnitCard : MonoBehaviour, IPointerClickHandler
     {
         if (active)
         {
-            _unit.ClickAction(_unit);
+            Click?.Invoke(_unitTO);
         }
+
     }
 
-    public void OnDefeated(Unit unit)
+    public void OnDefeated(UnitTObject unitTObject)
     {
+        _canvasGroup.alpha = 0.25f;
+
+        unitTObject.Selected -= Highlite;
+        unitTObject.TakeDamageAction -= UpdateHealthData;
+        unitTObject.DefeatedAction -= OnDefeated;
+
         _x_image.enabled = true;
         active = false;
+
     }
 
 }

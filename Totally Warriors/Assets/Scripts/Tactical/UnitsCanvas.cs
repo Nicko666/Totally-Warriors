@@ -4,26 +4,24 @@ using UnityEngine;
 public class UnitsCanvas : MonoBehaviour
 {
     float _size = 300;
-    float _hight = 80;
+    //float _hight = 80;
 
-    [SerializeField]
-    GameObject _cardPrefab;
+    [SerializeField] GameObject _cardPrefab;
 
-    public void SetDeck(List<Unit> units)
+    public List<Vector2> Positions(int count)
     {
-        float min = -_size / 2;
+        List<Vector2> result = new List<Vector2>();
+
         float step = _size / 2;
+        float min = -_size / 2;
 
-        for(int i = 0;  i < units.Count; i++)
+        for(int i = 0; i < count; i++)
         {
-            GameObject card = Instantiate(_cardPrefab, gameObject.transform);
-            card.transform.localPosition = new (min + step * i, _hight);
-            card.GetComponent<UnitCard>().SetUnitCard(units[i]);
-
-        }
-
+            result.Add(new(min + (step * i), 0) );
     }
 
-
+        return result;
+    
+    }
 
 }

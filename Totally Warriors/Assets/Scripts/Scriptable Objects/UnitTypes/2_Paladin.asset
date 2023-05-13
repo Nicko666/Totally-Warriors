@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2c74e0ab56350459b3b3e30c666c2f, type: 3}
   m_Name: 2_Paladin
   m_EditorClassIdentifier: 
-  Type: 0
-  MaxHealth: 15
-  MaxNumber: 3
-  Strength: 3
-  Speed: 2
-  Distance: 2
-  StrikeInterval: 2
-  Icon: {fileID: -1384544111, guid: b4319ba301ea7bf4fbe56f733558ef19, type: 3}
+  <Type>k__BackingField: 0
+  <MaxHealth>k__BackingField: 10
+  <MaxNumber>k__BackingField: 3
+  <Strength>k__BackingField: 3
+  <Speed>k__BackingField: 1
+  <Distance>k__BackingField: 1.5
+  <StrikeInterval>k__BackingField: 2
+  <Icon>k__BackingField: {fileID: -1384544111, guid: b4319ba301ea7bf4fbe56f733558ef19, type: 3}
+  <WarriorPreefab>k__BackingField: {fileID: 4849324783783834770, guid: 2788f3324abd70342a9d736dd5615fdb, type: 3}

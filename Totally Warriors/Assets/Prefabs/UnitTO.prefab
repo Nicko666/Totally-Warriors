@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2524040837764609163}
-  - component: {fileID: 2524040837764609157}
   - component: {fileID: 966961352354942376}
   - component: {fileID: 7526236837789118798}
+  - component: {fileID: 5756163484941857606}
   m_Layer: 0
-  m_Name: UnitObject
+  m_Name: UnitTO
   m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,20 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2524040837764609157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2524040837764609156}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22f0c18825d2e6c4e97d30b016529afa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Warriors>k__BackingField: []
-  mod: 
 --- !u!114 &966961352354942376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d169d03d7ace6734288af50d04c4589f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 0.7
+  distance: 0.6
 --- !u!114 &7526236837789118798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,3 +59,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8cf2a5f265c4944caf286b2972a6878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5756163484941857606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2524040837764609156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ca5a3c036d2da4592aba4d728bef89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Warriors>k__BackingField: []

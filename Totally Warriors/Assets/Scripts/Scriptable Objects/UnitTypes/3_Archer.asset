@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a2c74e0ab56350459b3b3e30c666c2f, type: 3}
   m_Name: 3_Archer
   m_EditorClassIdentifier: 
-  Type: 1
-  MaxHealth: 5
-  MaxNumber: 3
-  Strength: 1
-  Speed: 3
-  Distance: 3
-  StrikeInterval: 2
-  Icon: {fileID: -327999297, guid: b4319ba301ea7bf4fbe56f733558ef19, type: 3}
+  <Type>k__BackingField: 1
+  <MaxHealth>k__BackingField: 5
+  <MaxNumber>k__BackingField: 3
+  <Strength>k__BackingField: 1
+  <Speed>k__BackingField: 3
+  <Distance>k__BackingField: 3
+  <StrikeInterval>k__BackingField: 3
+  <Icon>k__BackingField: {fileID: -327999297, guid: b4319ba301ea7bf4fbe56f733558ef19, type: 3}
+  <WarriorPreefab>k__BackingField: {fileID: 4849324783783834770, guid: 2788f3324abd70342a9d736dd5615fdb, type: 3}
