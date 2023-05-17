@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c364984860e308418b02645ffe40ea0, type: 3}
   m_Name: DwarfCharacter
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Viking
-  <Color>k__BackingField: {r: 0.24003202, g: 0.40346786, b: 0.5471698, a: 1}
+  <Name>k__BackingField: Dwarf
+  <Color>k__BackingField: {r: 0.31492642, g: 0.4716981, b: 0.2959238, a: 1}
   <AIBehaviour>k__BackingField: {fileID: 7195845023763773361, guid: c9acb3df04e48514a8394f447a97053b, type: 3}

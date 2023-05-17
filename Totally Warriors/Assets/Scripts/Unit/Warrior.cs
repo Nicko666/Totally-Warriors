@@ -5,21 +5,23 @@ using UnityEngine.AI;
 
 public class Warrior : MonoBehaviour
 {
-    [SerializeField] SpriteRenderer[] _armor;
+    [SerializeField] ColorSprites _colorSprites;
     [SerializeField] NavMeshAgent _agent;
     [SerializeField] FloatingNunber _floatingNumber;
     [SerializeField] LandMarck destanationLandMarck;
+    [SerializeField] WarriorSpeedControl _warriorSpeedControl;
 
-    Color _color;
-    UnitType _unitType;
+    Color _color;    
     float _lastAttacTime;
-    public string Name { get; private set; }
+
     public int Health { get; private set; }
+    public string Name { get; private set; }
+    public UnitType UnitType { get; private set; }
     public List<Warrior> DetectedEnemies
     {
         get
         {
-            var hits = Physics.OverlapSphere(transform.position, _unitType.Distance);
+            var hits = Physics.OverlapSphere(transform.position, UnitType.Distance);
 
             List<Warrior> enemies = new();
 
@@ -44,24 +46,35 @@ public class Warrior : MonoBehaviour
             return enemies;
         }
     }
-    public bool GotDestination => _agent.remainingDistance < 0.01f;
+    public bool GotDestination => _agent.remainingDistance < 0.1f;
 
     public Action TakeDamageAction;
+
+    public Action<Warrior> AttackedBy;
 
     public void SetWarrior(string name, Color color, UnitType unitType, int health)
     {
         Name = name;
         _color = color;
-        _unitType = unitType;
+        UnitType = unitType;
         Health = health;
 
-        //paint armor
-        if (_armor is null) return;
-        foreach (var armor in _armor)
-        {
-            armor.color = color;
-        }
+        ColorWarrior();
 
+        _agent.speed = UnitType.Speed;
+        _warriorSpeedControl.Inst(UnitType.Speed);
+
+        void ColorWarrior()
+        {
+            if (_colorSprites is null)
+            {
+                _colorSprites = GetComponentInChildren<ColorSprites>();
+            }
+            foreach (var item in _colorSprites.Sprites)
+            {
+                item.color = color;
+            }
+        }
     }
 
     public Warrior SelectClosest(List<Warrior> warriors)
@@ -96,10 +109,10 @@ public class Warrior : MonoBehaviour
 
         RotateTo(enemy.transform.position);
 
-        if (_lastAttacTime + _unitType.StrikeInterval < Time.time)
+        if (_lastAttacTime + UnitType.StrikeInterval < Time.time)
         {
             AttackAnimation();
-            enemy.TakeDamage(this, _unitType.Strength);
+            enemy.TakeDamage(this, UnitType.Strength);
             _lastAttacTime = Time.time;
         }
 
@@ -119,6 +132,7 @@ public class Warrior : MonoBehaviour
     {
         Health -= strength;
         TakeDamageAnimation(-strength);
+        AttackedBy?.Invoke(warrior);
         TakeDamageAction?.Invoke();
 
         if (Health <= 0)
@@ -157,5 +171,11 @@ public class Warrior : MonoBehaviour
         Instantiate(destanationLandMarck, _agent.destination, destanationLandMarck.transform.rotation);
 
     }
+
+    float Distance(Vector3 position)
+    {
+        return (this.transform.position - position).magnitude;
+    }
+
 
 }

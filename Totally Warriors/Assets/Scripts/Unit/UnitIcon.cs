@@ -12,9 +12,9 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
     [SerializeField] Slider[] _healthSlider;
     [SerializeField] Image _image;
     
-    UnitTObject _unitTO;
+    UnitT _unitTO;
 
-    public Action<UnitTObject> Click;
+    public Action<UnitT> Click;
 
     private void Update()
     {
@@ -22,7 +22,7 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
             transform.position = _unitTO.UnitCenter + Vector3.up;
     }
 
-    public void Inst(UnitType unitType, UnitTObject unitTO)
+    public void Inst(UnitType unitType, UnitT unitTO)
     {
         _unitTO = unitTO;
         _image.sprite = unitType.Icon;
@@ -64,7 +64,7 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
         Click?.Invoke(_unitTO);
     }
 
-    public void OnDefeated(UnitTObject unitTObject)
+    public void OnDefeated(UnitT unitTObject)
     {
         foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
 
@@ -73,6 +73,7 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
         unitTObject.DefeatedAction -= OnDefeated;
 
         Destroy(gameObject);
+
     }
 
 }

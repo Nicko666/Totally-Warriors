@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TacticalUI : MonoBehaviour
 {
@@ -7,26 +8,24 @@ public class TacticalUI : MonoBehaviour
     [field: SerializeField] public UnitsCanvas LowUnitsCanvas { get; private set; }
     [field: SerializeField] public TacticalStatus tacticalStatus { get; private set; }
 
-    List<UnitTObject> _playerUnits;
-    List<UnitTObject> _aiUnits;
+    [field: SerializeField] public TacticalSceneManager SceneManager { get; private set; }
 
-    public void SetStatus(List<UnitTObject> playerUnits, List<UnitTObject> aiUnits)
+    public void SetStatus(TacticalSceneManager sceneManager)
     {
-        _playerUnits = playerUnits;// ?? new List<UnitTObject>();
-        _aiUnits = aiUnits;// ?? new List<UnitTObject>();
+        SceneManager = sceneManager;
 
-        foreach (var unit in _playerUnits) unit.DefeatedAction += UpdateStatus;
-        foreach (var unit in _aiUnits) unit.DefeatedAction += UpdateStatus;
+        foreach (var unit in sceneManager.playerUnits) unit.TakeDamageAction += UpdateStatus;
+        foreach (var unit in sceneManager.aiUnits) unit.TakeDamageAction += UpdateStatus;
 
-        tacticalStatus.SetColors(playerUnits[0].Color, aiUnits[0].Color);
+        tacticalStatus.SetColors(sceneManager.Player.Color, sceneManager.AI.Color);
 
-        tacticalStatus.SetNumber(_playerUnits.Count, _aiUnits.Count);
+        tacticalStatus.SetNumber(sceneManager.PowerBallance);
 
     }
 
-    void UpdateStatus(UnitTObject unitTObject)
+    void UpdateStatus(List<int> health)
     {
-        tacticalStatus.SetNumber(_playerUnits.Count, _aiUnits.Count);
+        tacticalStatus.SetNumber(SceneManager.PowerBallance);
 
     }
 

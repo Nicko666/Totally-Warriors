@@ -11,7 +11,7 @@ public class GameManager : Singleton<GameManager>
         DontDestroyOnLoad(gameObject);
 
         var tacticalScene = FindObjectOfType<TacticalSceneManager>();
-        tacticalScene.SetPvCScene(Player, AI, 60);
+        tacticalScene.InstPvCScene(Player, AI, 120);
     }
 
 }

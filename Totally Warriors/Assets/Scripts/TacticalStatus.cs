@@ -16,11 +16,7 @@ public class TacticalStatus : MonoBehaviour
 
     }
 
-    public void SetNumber(float playerUnits, float aiUnits)
-    {
-        _slider.value = playerUnits / (playerUnits + aiUnits);
-
-    }
+    public void SetNumber(float ballance) => _slider.value = ballance;
 
     public void ShowTime(float time)
     {
