@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 659adbc55d3fcd4429fe3d1a189c8e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  characterManager: {fileID: 0}
 --- !u!114 &1401917330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d169d03d7ace6734288af50d04c4589f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 0
+  distance: 1
 --- !u!114 &1401917329
 MonoBehaviour:
   m_ObjectHideFlags: 0

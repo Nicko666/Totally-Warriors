@@ -46,8 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a5c948913845e24687edd810d2e31e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player: {fileID: 1422928671092823156}
-  AI: {fileID: 317642901267192299}
+  <Player>k__BackingField: {fileID: 1422928671092823156}
+  <AI>k__BackingField: {fileID: 317642901267192299}
+  <Time>k__BackingField: 90
 --- !u!1001 &342727493340040084
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -102,6 +103,26 @@ PrefabInstance:
     - target: {fileID: 3978910003923710255, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541080348202393570, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
+      propertyPath: <WarriorsHealth>k__BackingField.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541080348202393570, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
+      propertyPath: <WarriorsHealth>k__BackingField.Array.data[0]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541080348202393570, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
+      propertyPath: <WarriorsHealth>k__BackingField.Array.data[1]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011942528902710962, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
+      propertyPath: <WarriorsHealth>k__BackingField.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8011942528902710962, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}
+      propertyPath: <WarriorsHealth>k__BackingField.Array.data[1]
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5fec7a4297044f40a0fa9ec180958e1, type: 3}

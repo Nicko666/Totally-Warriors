@@ -3,12 +3,12 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TacticalMap : MonoBehaviour
+public class MapT : MonoBehaviour
 {
     [field: SerializeField] public Transform[] UpPositions { get; private set; }
     [field: SerializeField] public Transform[] LowPositions { get; private set; }
 
-    public Action<Vector3> MapClick;
+    public Action<Vector3> Click;
 
     float dragTime = 1.0f;
     float lastDownTime;
@@ -26,7 +26,7 @@ public class TacticalMap : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            MapClick?.Invoke(hit.point);
+            Click?.Invoke(hit.point);
         }
 
     }

@@ -5,12 +5,23 @@ using UnityEngine.UI;
 public class BattleManager : Singleton<BattleManager>
 {
     [field: SerializeField] public List<Character> Characters{ get; private set; }
-    [field: SerializeField] public List<Unit> Units { get; private set; }
+    [field: SerializeField] public List<UnitType> UnitTypes { get; private set; }
 
     public CharacterManager Player;
     public CharacterManager AI;
 
     public Button StartBattleButton;
+
+    [SerializeField] UnitsDisplay _playerUnitsDisplay;
+    [SerializeField] UnitsDisplay _aiUnitsDisplay;
+
+    public void Inst(CharacterManager player, CharacterManager ai)
+    {
+        Player = player;
+        AI = ai;
+        _playerUnitsDisplay.Inst(Player);
+        _aiUnitsDisplay.Inst(AI);
+    }
 
     private void Update()
     {
@@ -29,7 +40,7 @@ public class BattleManager : Singleton<BattleManager>
 
     public void StartBattle()
     {
-
+        GameManager.Instance.LoadNewScene("Tactical");
     }
 
 }

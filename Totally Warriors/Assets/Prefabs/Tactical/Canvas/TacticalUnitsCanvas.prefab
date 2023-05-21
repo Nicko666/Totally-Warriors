@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 100}
+  m_SizeDelta: {x: 480, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8677221172489132253
 CanvasRenderer:
@@ -116,7 +116,7 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2440415482003039583
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -181,4 +181,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b78bebbf8dfee4288d575a385158dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvas: {fileID: 0}
+  _rectTransform: {fileID: 2440415482003039581}
+  _characterManager: {fileID: 0}
   _cardPrefab: {fileID: 5193254246505465113, guid: 290aa082e0fc6e7409b79847aee08c70, type: 3}
+  _cards: []

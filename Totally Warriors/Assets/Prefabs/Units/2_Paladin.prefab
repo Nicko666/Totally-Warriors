@@ -44,12 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6d52d0d391ce474ab8f06ffa549dfd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WarriorsHealath>k__BackingField: 
+  <WarriorsHealth>k__BackingField: 0a000000
   UnitType: {fileID: 11400000, guid: d2705fc14dd88d14b802e03214fa1a9f, type: 2}
-  WarriorPreefab: {fileID: 4849324783783834770, guid: 2788f3324abd70342a9d736dd5615fdb, type: 3}
-  _tacticalPreefab: {fileID: 2524040837764609157, guid: 01bf9dabf87861c4a8eecedd84148433, type: 3}
-  _unitIconPreefab: {fileID: 7457906460960222688, guid: 6b9e91838f531024fa206a87bac578cc, type: 3}
-  <Name>k__BackingField: 
-  <Color>k__BackingField: {r: 0, g: 0, b: 0, a: 0}
-  <UnitObj>k__BackingField: {fileID: 0}
-  <UnitIco>k__BackingField: {fileID: 0}

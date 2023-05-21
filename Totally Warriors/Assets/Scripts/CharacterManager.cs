@@ -5,19 +5,21 @@ using UnityEngine;
 public class CharacterManager : MonoBehaviour
 {
     [field: SerializeField] public Character Character { get; private set; }
+    [field: SerializeField] public int UnitsLimit { get; private set; }
     [field: SerializeField] public List<Unit> Units { get; private set; }
     [field: SerializeField] public bool Player { get; private set; }
 
-    public Action<List<Unit>> UnitsChange;
-    public Action<Character> CharacterChange;
+    public Action ChangeAction;
 
     public void AddUnit(Unit unit)
     {
-        if (Units.Count < 3)
+        if (Units.Count < UnitsLimit)
         {
-            Units.Add(unit);
-            UnitsChange?.Invoke(Units);
+            var temp = Instantiate(unit.gameObject, transform).GetComponent<Unit>();
+            Units.Add(temp);
         }
+
+        ChangeAction?.Invoke();
 
     }
 
@@ -25,17 +27,20 @@ public class CharacterManager : MonoBehaviour
     {
         if (Units.Contains(unit))
         {
-            Units.Remove(unit);
             Destroy(unit.gameObject);
-            UnitsChange?.Invoke(Units);
+            Units.Remove(unit);
         }
+
+        ChangeAction?.Invoke();
 
     }
 
     public void ChangeCharacter(Character character)
     {
         Character = character;
-        CharacterChange?.Invoke(Character);
+
+        ChangeAction?.Invoke();
+
     }
 
 }

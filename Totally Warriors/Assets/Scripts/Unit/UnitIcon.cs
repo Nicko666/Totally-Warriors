@@ -1,44 +1,48 @@
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.UI.CanvasScaler;
 
 public class UnitIcon : MonoBehaviour, IPointerClickHandler
 {
+    [SerializeField] UnitT _unitT;
+    [Header("Fill in prefab")]
     [SerializeField] CanvasGroup _canvasGroup;
     [SerializeField] Slider[] _healthSlider;
     [SerializeField] Image _image;
-    
-    UnitT _unitTO;
 
-    public Action<UnitT> Click;
 
     private void Update()
     {
-        if (_unitTO != null & _unitTO.Warriors.Count > 0)
-            transform.position = _unitTO.UnitCenter + Vector3.up;
+        if (_unitT != null & _unitT.Warriors.Count > 0)
+            transform.position = _unitT.UnitCenter + Vector3.up;
     }
 
-    public void Inst(UnitType unitType, UnitT unitTO)
+    private void OnEnable()
     {
-        _unitTO = unitTO;
-        _image.sprite = unitType.Icon;
+        _unitT.Selected += Highlite;
+        _unitT.UnitTakeDamageAction += UpdateHealthData;
+
+    }
+
+    private void Start()
+    {
+        _image.sprite = _unitT.UnitType.Icon;
 
         foreach (var slider in _healthSlider)
         {
-            slider.fillRect.gameObject.GetComponent<Image>().color = unitTO.Color;
-            slider.maxValue = unitType.MaxHealth;
+            slider.fillRect.gameObject.GetComponent<Image>().color = _unitT.Color;
+            slider.maxValue = _unitT.UnitType.MaxHealth;
         }
 
-        _unitTO.Selected += Highlite;
-        _unitTO.TakeDamageAction += UpdateHealthData;
-        _unitTO.DefeatedAction += OnDefeated;
+        UpdateHealthData(_unitT.WarriorsHealth);
 
-        UpdateHealthData(unitTO.WarriorsHealth);
+    }
 
+    private void OnDisable()
+    {
+        _unitT.Selected -= Highlite;
+        _unitT.UnitTakeDamageAction -= UpdateHealthData;
     }
 
     public void UpdateHealthData(List<int> health)
@@ -53,27 +57,8 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
 
     }
 
-    public void Highlite(bool value)
-    {
-        _canvasGroup.alpha = (value) ? 0.5f : 0.25f;
+    public void Highlite(bool value) => _canvasGroup.alpha = (value) ? 0.5f : 0.25f;
 
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        Click?.Invoke(_unitTO);
-    }
-
-    public void OnDefeated(UnitT unitTObject)
-    {
-        foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
-
-        unitTObject.Selected -= Highlite;
-        unitTObject.TakeDamageAction -= UpdateHealthData;
-        unitTObject.DefeatedAction -= OnDefeated;
-
-        Destroy(gameObject);
-
-    }
+    public void OnPointerClick(PointerEventData eventData) => _unitT.ClickAction?.Invoke(_unitT);
 
 }

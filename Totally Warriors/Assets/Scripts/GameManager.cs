@@ -1,17 +1,36 @@
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public class GameManager : MonoBehaviour
 {
-    [SerializeField] CharacterManager Player;
-    [SerializeField] CharacterManager AI;
+    public static GameManager Instance { get; private set; }
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        // If there is an instance, and it's not me, delete myself.
 
-        var tacticalScene = FindObjectOfType<TacticalSceneManager>();
-        tacticalScene.InstPvCScene(Player, AI, 120);
+        if (Instance != null)
+        {
+            if (Instance != this)
+                Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(this);
+        }
+
+    }
+
+    [field: SerializeField] public CharacterManager Player { get; private set; }
+    [field: SerializeField] public CharacterManager AI { get; private set; }
+    [field: SerializeField] public float Time { get; private set; }
+
+    public void LoadNewScene(string sceneToLoad)
+    {
+        SceneManager.LoadScene("Loading");
+        SceneManager.LoadScene(sceneToLoad);
+
     }
 
 }

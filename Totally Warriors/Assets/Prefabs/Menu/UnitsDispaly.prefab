@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6002865687504672670}
   - component: {fileID: 2890006682402079169}
   m_Layer: 5
-  m_Name: BattleMenuUnitsDispaly
+  m_Name: UnitsDispaly
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -106,10 +106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fb3f6dad5cd104aa8a8de99ff284b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _color: {r: 0, g: 0, b: 0, a: 0}
   _characterManager: {fileID: 0}
   _unitCardPreefab: {fileID: 3477336136739366412, guid: 16a65c6542415594cbebf9a6bb953595, type: 3}
   _characterName: {fileID: 7932355031638257264}
+  _rectTransform: {fileID: 1583525811177596684}
 --- !u!1 &4355081716198015236
 GameObject:
   m_ObjectHideFlags: 0

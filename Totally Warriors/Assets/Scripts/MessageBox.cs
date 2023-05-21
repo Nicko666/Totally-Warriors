@@ -8,6 +8,16 @@ public class MessageBox : MonoBehaviour
 
     public Action Click;
 
+    private void OnEnable()
+    {
+        Time.timeScale = 0f;
+    }
+
+    private void OnDisable()
+    {
+        Time.timeScale = 1f;
+    }
+
     public void MessageText(string text) => _text.text = text;
 
     public void OnClick() => Click?.Invoke();

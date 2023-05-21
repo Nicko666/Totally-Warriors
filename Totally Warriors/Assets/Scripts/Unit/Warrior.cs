@@ -7,21 +7,17 @@ public class Warrior : MonoBehaviour
 {
     [SerializeField] ColorSprites _colorSprites;
     [SerializeField] NavMeshAgent _agent;
-    [SerializeField] FloatingNunber _floatingNumber;
-    [SerializeField] LandMarck destanationLandMarck;
+    [SerializeField] FloatingNunber _floatingNumberPrefab;
+    [SerializeField] LandMarck _destanationLandMarckPrefab;
     [SerializeField] WarriorSpeedControl _warriorSpeedControl;
 
-    Color _color;    
-    float _lastAttacTime;
-
+    public UnitT UnitT { get; private set; }
     public int Health { get; private set; }
-    public string Name { get; private set; }
-    public UnitType UnitType { get; private set; }
     public List<Warrior> DetectedEnemies
     {
         get
         {
-            var hits = Physics.OverlapSphere(transform.position, UnitType.Distance);
+            var hits = Physics.OverlapSphere(transform.position, UnitT.UnitType.Distance);
 
             List<Warrior> enemies = new();
 
@@ -35,7 +31,7 @@ public class Warrior : MonoBehaviour
                 Warrior warior;
                 if (hit.gameObject.TryGetComponent<Warrior>(out warior))
                 {
-                    if (warior.Name != Name && Health > 0)
+                    if (warior.UnitT.Name != this.UnitT.Name && Health > 0)
                     {
                         enemies.Add(warior);
 
@@ -48,21 +44,22 @@ public class Warrior : MonoBehaviour
     }
     public bool GotDestination => _agent.remainingDistance < 0.1f;
 
-    public Action TakeDamageAction;
+    float _lastAttacTime;
 
-    public Action<Warrior> AttackedBy;
+    public Action<UnitT> OnWarriorAttackedBy;
+    public Action OnWarriorTakeDamage;
+    public Action<Warrior> OnWarriorDefeated;
 
-    public void SetWarrior(string name, Color color, UnitType unitType, int health)
+
+    public void Inst(UnitT unitT, int health)
     {
-        Name = name;
-        _color = color;
-        UnitType = unitType;
+        UnitT = unitT;
         Health = health;
 
         ColorWarrior();
 
-        _agent.speed = UnitType.Speed;
-        _warriorSpeedControl.Inst(UnitType.Speed);
+        _agent.speed = UnitT.UnitType.Speed;
+        _warriorSpeedControl.Inst(UnitT.UnitType.Speed);
 
         void ColorWarrior()
         {
@@ -72,7 +69,7 @@ public class Warrior : MonoBehaviour
             }
             foreach (var item in _colorSprites.Sprites)
             {
-                item.color = color;
+                item.color = UnitT.Color;
             }
         }
     }
@@ -98,10 +95,20 @@ public class Warrior : MonoBehaviour
 
     public void MoveTo(Vector3 target)
     {
-        _agent.SetDestination(target); 
+        _agent.SetDestination(target);
     }
 
-    public void StopAndAttack(Warrior enemy)
+    public void RotateTo(Vector3 position)
+    {
+        Vector3 direction = position - transform.position;
+
+        float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+
+        _agent.transform.rotation = Quaternion.AngleAxis(angle, Vector3.up);
+
+    }
+
+    public void Attack(Warrior enemy)
     {
         if (enemy == null) return;
 
@@ -109,36 +116,30 @@ public class Warrior : MonoBehaviour
 
         RotateTo(enemy.transform.position);
 
-        if (_lastAttacTime + UnitType.StrikeInterval < Time.time)
+        if (_lastAttacTime + UnitT.UnitType.StrikeInterval < Time.time)
         {
-            AttackAnimation();
-            enemy.TakeDamage(this, UnitType.Strength);
+            enemy.TakeDamage(this, UnitT.UnitType.Strength);
             _lastAttacTime = Time.time;
         }
 
-        void RotateTo(Vector3 position)
-        {
-            Vector3 direction = position - transform.position;
+    }
 
-            float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+    public void ShowDestanation() 
+    {
+        Instantiate(_destanationLandMarckPrefab, _agent.destination, _destanationLandMarckPrefab.transform.rotation);
 
-            _agent.transform.rotation = Quaternion.AngleAxis(angle, Vector3.up);
-
-        }
-
-    }    
+    }
 
     void TakeDamage(Warrior warrior, int strength)
     {
         Health -= strength;
         TakeDamageAnimation(-strength);
-        AttackedBy?.Invoke(warrior);
-        TakeDamageAction?.Invoke();
-
+        OnWarriorAttackedBy?.Invoke(warrior.UnitT);
+        OnWarriorTakeDamage?.Invoke();
         if (Health <= 0)
         {
-            Health = 0;
-            DeathAnimation();
+            OnWarriorDefeated?.Invoke(this);
+
         }
 
     }
@@ -149,33 +150,10 @@ public class Warrior : MonoBehaviour
 
         void InstantiateFloatingNumber(int number)
         {
-            FloatingNunber fn = Instantiate(_floatingNumber, transform.position, new()).GetComponent<FloatingNunber>();
-            fn.SetNumber(number, _color);
+            FloatingNunber fn = Instantiate(_floatingNumberPrefab, transform.position, new()).GetComponent<FloatingNunber>();
+            fn.SetNumber(number, UnitT.Color);
         }
 
     }
-
-    void DeathAnimation()
-    {
-        gameObject.SetActive(false);
-    }
-
-    void AttackAnimation()
-    {
-
-
-    }
-
-    public void ShowDestanation() 
-    {
-        Instantiate(destanationLandMarck, _agent.destination, destanationLandMarck.transform.rotation);
-
-    }
-
-    float Distance(Vector3 position)
-    {
-        return (this.transform.position - position).magnitude;
-    }
-
 
 }

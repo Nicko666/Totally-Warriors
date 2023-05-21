@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 public class UnitT : MonoBehaviour
 {
     [field: SerializeField] public List<Warrior> Warriors { get; private set; }
-
-    public string Name { get; private set; }
-    public Color Color { get; private set; }
-    public UnitType UnitType { get; private set; }
-
+    [field: SerializeField] public UnitTBehavior UnitBehavior { get; private set; }
+    [field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public Color Color { get; private set; }
+    [field: SerializeField] public UnitType UnitType { get; private set; }
 
     private IUnitFormation _unitFormation;
+
+    [SerializeField] UnitT Enemy;
 
 
     public Vector3 UnitCenter
@@ -61,186 +63,102 @@ public class UnitT : MonoBehaviour
 
     }
 
-
-    //public bool HoldPositions;
-    //public bool KeepDistance;
-
-
-    public Action CurrentMod;
+    public Action<UnitT> ClickAction; 
 
     public Action<bool> Selected;
 
-    public Action<List<int>> TakeDamageAction;
+    public Action<List<int>> UnitTakeDamageAction;
 
-    public Action<UnitT> DefeatedAction;
+    public Action<UnitT> AttackedBy;
 
-    public Action<UnitT, Warrior> AttackedBy;
+    public Action<UnitTBehavior> ChangeBehavior;
 
 
+    private void Update()
+    {
+        switch (UnitBehavior)
+        {
+            case UnitTBehavior.Protect:
+                ProtectBehavior();
+                break;
 
-    private void Update() => CurrentMod?.Invoke();
+            case UnitTBehavior.Move:
+                MoveBehavior();
+                break;
+
+            case UnitTBehavior.Attack:
+                AttackBehavior();
+                break;
+
+        }
+    }
+
+    
 
     public void Inst(Unit unit, Character character, Transform transform)
     {
         Name = character.Name;
         Color = character.Color;
         UnitType = unit.UnitType;
-        //HoldPositions = true;
-        //KeepDistance = false;
 
         SetCircleFormation();
-        var positions = _unitFormation.GetPositions(unit.WarriorsHealath.Count);
+
+        var positions = _unitFormation.GetPositions(unit.WarriorsHealth.Count);
 
         Warriors = new List<Warrior>();
 
-        for (int i = 0; i < unit.WarriorsHealath.Count; i++)
+        for (int i = 0; i < positions.Length; i++)
         {
-            InstWarrior(unit.WarriorsHealath[i], transform.position + positions[i], transform.rotation, unit.UnitType, character);
+            CreateWarrior(unit.WarriorsHealth[i], transform.position + positions[i], transform.rotation, unit.UnitType, character);
         }
-
-        CurrentMod = DefaultMod;
-
-        void InstWarrior(int health, Vector3 position, Quaternion rotation, UnitType unitType, Character character)
-        {
-            Warriors.Add(Instantiate(unitType.WarriorPreefab, position, rotation, gameObject.transform));
-            Warriors.Last().SetWarrior(character.Name, character.Color, unitType, health);
-
-            Warriors.Last().TakeDamageAction += OnTakeDamage;
-            Warriors.Last().AttackedBy += OnAttackedBy; 
-
-        }
+              
 
     }
 
-    public void OnAttackedBy(Warrior warrior)
+    void CreateWarrior(int health, Vector3 position, Quaternion rotation, UnitType unitType, Character character)
     {
-        AttackedBy?.Invoke(this, warrior);
+        Warriors.Add(Instantiate(unitType.WarriorPreefab, position, rotation, this.transform).GetComponent<Warrior>());
+        Warriors.Last().Inst(this, health);
 
-        //if (CurrentMod == DefaultMod && !HoldPositions)
-        //{
-        //    Attack(warrior);
-        //}
+        Warriors.Last().OnWarriorAttackedBy += OnAttackedBy;
+        Warriors.Last().OnWarriorTakeDamage += OnTakeDamage;
+        Warriors.Last().OnWarriorDefeated += RemoveWarrior;
 
     }
 
     public void OnTakeDamage()
+    {       
+        UnitTakeDamageAction?.Invoke(WarriorsHealth);
+    }
+
+    void RemoveWarrior(Warrior warrior)
     {
-        List<Warrior> toRemove = new List<Warrior>();
-        
-        for (int i = 0; i < Warriors.Count; i++)
+        warrior.OnWarriorTakeDamage -= OnTakeDamage;
+        warrior.OnWarriorAttackedBy -= OnAttackedBy;
+        warrior.OnWarriorDefeated -= RemoveWarrior;
+
+        Warriors.Remove(warrior);
+        Destroy(warrior.gameObject);
+
+        if (Warriors == null || Warriors.Count < 1)
         {
-            if (Warriors[i].Health <= 0) toRemove.Add(Warriors[i]);
-        }
-
-        foreach (Warrior warrior in toRemove) Warriors.Remove(warrior);
-
-        TakeDamageAction?.Invoke(WarriorsHealth);
-
-        if (Warriors.Count < 1)
-        {
-            DefeatedAction?.Invoke(this);
-            return;
+            Debug.Log("OnUnitDefeatedNotify");
+            SceneTActions.Instance.OnUnitDefeatedNotify(this);
         }
 
     }
 
-    public void SetCircleFormation()
+    public void OnAttackedBy(UnitT unitT)
     {
-        _unitFormation = GetComponent<CircleFormation>();
-
-    }
-
-    
-    public void DefaultMod()
-    {
-        List<Warrior> detectedEnemyes = DetectedEnemyes;
-
-        if (detectedEnemyes.Count < 1)
+        if (UnitBehavior == UnitTBehavior.Protect)
         {
-            //Moving(GetUnitCenter);
-            return;
-        }
-
-        foreach(Warrior warrior in Warriors)
-        {
-            if(warrior.DetectedEnemies.Count > 0)
-            {
-                warrior.StopAndAttack(warrior.SelectClosest(warrior.DetectedEnemies));
-            }
-            else
-            {
-                warrior.MoveTo(warrior.SelectClosest(detectedEnemyes).gameObject.transform.position);
-            }
-        }
-    }
-
-    public void SetDestination(Vector3 target)
-    {
-        Moving(target);
-        CurrentMod = DestinationMod;
-
-        void DestinationMod()
-        {
-            if (Warriors.Any(w => w.GotDestination))
-            {
-                CurrentMod = DefaultMod;
-                return;
-            }
-
-            foreach (var warrior in Warriors)
-            {
-                if (warrior.GotDestination && warrior.DetectedEnemies.Count > 0)
-                {
-                    warrior.StopAndAttack(warrior.SelectClosest(warrior.DetectedEnemies));
-                }
-            }
-
-        }
-
-        void Moving(Vector3 position)
-        {
-            var positions = _unitFormation.GetPositions(Warriors.Count);
-
-            for (int i = 0; i < positions.Length; i++)
-            {
-                Warriors[i].MoveTo(position + (positions[i] * 1));
-            }
+            SetAttackBehavior(unitT);
+            AttackedBy?.Invoke(unitT);
         }
 
     }
 
-    public void Attack(List<Warrior> enemy)
-    {
-        List<Warrior> _enemies = enemy;
-        CurrentMod = EnemyMod;
-
-        void EnemyMod()
-        {
-            if (_enemies == null | _enemies.Count < 1)
-            {
-                CurrentMod = DefaultMod;
-                return;
-            }
-
-            foreach (var warrior in Warriors)
-            {
-                if (warrior.DetectedEnemies.Any(e => _enemies.Contains(e)))
-                {
-                    warrior.StopAndAttack(warrior.SelectClosest(_enemies));
-                }
-                else
-                {
-                    var enemy = warrior.SelectClosest(_enemies);
-                    if (enemy == null) return;
-                    warrior.MoveTo(enemy.transform.position);
-                }
-            }
-        }
-
-    }
-
-    public void Attack(params Warrior[] enemy) => Attack(enemy.ToList());
-
+    public void SetCircleFormation() => _unitFormation = GetComponent<CircleFormation>();
 
     public void ShowWarriorsDestanations()
     {
@@ -249,4 +167,98 @@ public class UnitT : MonoBehaviour
             warrior.ShowDestanation();
         }
     }
+
+
+    public void SetProtectBehavior(Vector3 position)
+    {
+        foreach (var warrior in Warriors)
+        {
+            warrior.MoveTo(warrior.transform.position);
+        }
+
+        UnitBehavior = UnitTBehavior.Protect;
+        ChangeBehavior!.Invoke(UnitTBehavior.Protect);
+    }
+
+    void ProtectBehavior()
+    {
+        foreach (var warrior in Warriors)
+        {
+            var enemies = warrior.DetectedEnemies;
+            if (enemies.Count > 0)
+            {
+                SetAttackBehavior(warrior.SelectClosest(enemies).UnitT);
+                return;
+            }
+        }
+                
+    }
+
+
+    public void SetMoveBehavior(Vector3 target)
+    {
+        var positions = _unitFormation.GetPositions(Warriors.Count);
+
+        for (int i = 0; i < Warriors.Count; i++)
+        {
+            Warriors[i].MoveTo(target + (positions[i] * 1));
+        }
+
+        UnitBehavior = UnitTBehavior.Move;
+        ChangeBehavior!.Invoke(UnitTBehavior.Move);
+
+    }
+
+    void MoveBehavior()
+    {
+        if (Warriors.Any(w => w.GotDestination))
+        {
+            SetProtectBehavior(UnitCenter);
+            return;
+        }
+
+        foreach (var warrior in Warriors)
+        {
+            if (warrior.GotDestination && warrior.DetectedEnemies.Count > 0)
+            {
+                //warrior.Attack(warrior.SelectClosest(warrior.DetectedEnemies));
+                SetAttackBehavior(warrior.SelectClosest(warrior.DetectedEnemies).UnitT);
+                return;
+            }
+        }
+
+    }
+
+
+    public void SetAttackBehavior(UnitT enemy)
+    {
+        Enemy = enemy;
+        UnitBehavior = UnitTBehavior.Attack;
+        ChangeBehavior!.Invoke(UnitTBehavior.Attack);
+
+    }
+
+    void AttackBehavior()
+    {
+        if (Enemy == null || Enemy.Warriors.Count < 1)
+        {
+            Enemy = null;
+            SetProtectBehavior(UnitCenter);
+            return;
+        }
+
+        foreach (var warrior in Warriors)
+        {
+            if (warrior.DetectedEnemies.Any(e => Enemy.Warriors.Contains(e)))
+            {
+                warrior.Attack(warrior.SelectClosest(Enemy.Warriors));
+            }
+            else
+            {
+                warrior.MoveTo(warrior.SelectClosest(Enemy.Warriors).transform.position);
+            }
+        }
+
+    }
+
 }
