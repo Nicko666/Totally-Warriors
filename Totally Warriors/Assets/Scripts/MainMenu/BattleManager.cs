@@ -7,25 +7,21 @@ public class BattleManager : Singleton<BattleManager>
     [field: SerializeField] public List<Character> Characters{ get; private set; }
     [field: SerializeField] public List<UnitType> UnitTypes { get; private set; }
 
-    public CharacterManager Player;
-    public CharacterManager AI;
 
     public Button StartBattleButton;
 
     [SerializeField] UnitsDisplay _playerUnitsDisplay;
     [SerializeField] UnitsDisplay _aiUnitsDisplay;
 
-    public void Inst(CharacterManager player, CharacterManager ai)
+    private void Start()
     {
-        Player = player;
-        AI = ai;
-        _playerUnitsDisplay.Inst(Player);
-        _aiUnitsDisplay.Inst(AI);
+        _playerUnitsDisplay.Inst(GameManager.Instance.Player);
+        _aiUnitsDisplay.Inst(GameManager.Instance.AI);
     }
 
     private void Update()
     {
-        StartBattleButton.interactable = (Player.Units.Count > 0 && AI.Units.Count > 0);
+        StartBattleButton.interactable = (GameManager.Instance.Player.Units.Count > 0 && GameManager.Instance.AI.Units.Count > 0);
     }
 
     public Character GetNextCharacter(Character current)

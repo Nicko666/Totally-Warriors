@@ -27,9 +27,9 @@ public class UnitTCard : MonoBehaviour, IPointerClickHandler
         }
 
         UpdateHealthData(UnitT.WarriorsHealth);
+
         UnitT.Selected += Highlite;
         UnitT.UnitTakeDamageAction += UpdateHealthData;
-
     }
 
     public void UpdateHealthData(List<int> health)
@@ -40,6 +40,11 @@ public class UnitTCard : MonoBehaviour, IPointerClickHandler
         {
             _healthSlider[n].gameObject.SetActive(true);
             _healthSlider[n].value = health[n];
+        }
+
+        if (UnitT == null | UnitT.Warriors.Count < 1)
+        {
+            OnDefeated();
         }
 
     }
@@ -57,12 +62,10 @@ public class UnitTCard : MonoBehaviour, IPointerClickHandler
 
     }
 
-    private void OnDestroy()
+    void OnDefeated()
     {
-        _canvasGroup.alpha = 0.25f;
-
-        UnitT.Selected -= Highlite;
-        UnitT.UnitTakeDamageAction -= UpdateHealthData;
+        _x_image.enabled = true;
+        _canvasGroup.alpha = 0.5f;
 
     }
 

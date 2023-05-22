@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInputT : MonoBehaviour
@@ -22,20 +21,20 @@ public class PlayerInputT : MonoBehaviour
 
     private void OnDisable()
     {
-        SelectedUnits.Clear();
+        //SelectedUnits.Clear();
 
-        foreach (var unit in characterManager.MyUnits)
-        {
-            unit.ClickAction -= OnPlayerUnitClick;
-            SceneTActions.Instance.OnUnitDefeated -= Deselect;
-        }
-        foreach (var unit in characterManager.EnemyUnits)
-        {
-            unit.ClickAction -= OnAIUnitClick;
-            SceneTActions.Instance.OnUnitDefeated -= Deselect;
-        }
+        //foreach (var unit in characterManager.MyUnits)
+        //{
+        //    unit.ClickAction -= OnPlayerUnitClick;
+        //    SceneTActions.Instance.OnUnitDefeated -= Deselect;
+        //}
+        //foreach (var unit in characterManager.EnemyUnits)
+        //{
+        //    unit.ClickAction -= OnAIUnitClick;
+        //    SceneTActions.Instance.OnUnitDefeated -= Deselect;
+        //}
 
-        SceneTManager.Instance.Map.Click -= OnMapClick;
+        //SceneTManager.Instance.Map.Click -= OnMapClick;
 
     }
 

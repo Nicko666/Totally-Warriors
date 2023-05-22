@@ -41,8 +41,8 @@ public class UnitIcon : MonoBehaviour, IPointerClickHandler
 
     private void OnDisable()
     {
-        _unitT.Selected -= Highlite;
-        _unitT.UnitTakeDamageAction -= UpdateHealthData;
+        //_unitT.Selected -= Highlite;
+        //_unitT.UnitTakeDamageAction -= UpdateHealthData;
     }
 
     public void UpdateHealthData(List<int> health)

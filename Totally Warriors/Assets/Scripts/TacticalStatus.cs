@@ -9,14 +9,26 @@ public class TacticalStatus : MonoBehaviour
     [SerializeField] Slider _slider;
     [SerializeField] TMP_Text _text;
 
-    public void SetColors(Color playerColor, Color aiColor)
+    private void OnEnable()
     {
-        _player.color = playerColor;
-        _ai.color = aiColor;
+        SceneTActions.Instance.OnUnitsCreated += SetColors;
+        SceneTActions.Instance.OnUnitsCreated += SetNumber;
 
     }
 
-    public void SetNumber(float ballance) => _slider.value = ballance;
+    private void Update()
+    {
+        ShowTime(SceneTManager.Instance.Time);
+    }
+
+    public void SetColors()
+    {
+        _player.color = SceneTManager.Instance.Player.Character.Color;
+        _ai.color = SceneTManager.Instance.AI.Character.Color;
+
+    }    
+
+    public void SetNumber() => _slider.value = SceneTManager.Instance.PowerBallance;
 
     public void ShowTime(float time)
     {

@@ -76,6 +76,8 @@ public class UnitT : MonoBehaviour
 
     private void Update()
     {
+        if (Warriors.Count < 1) return;
+
         switch (UnitBehavior)
         {
             case UnitTBehavior.Protect:
@@ -142,7 +144,6 @@ public class UnitT : MonoBehaviour
 
         if (Warriors == null || Warriors.Count < 1)
         {
-            Debug.Log("OnUnitDefeatedNotify");
             SceneTActions.Instance.OnUnitDefeatedNotify(this);
         }
 

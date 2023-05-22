@@ -8,24 +8,51 @@ public class SceneTManager : Singleton<SceneTManager>
     [field: SerializeField] public MapT Map { get; private set; }
     [field: SerializeField] public CharacterManagerT Player { get; private set; }
     [field: SerializeField] public CharacterManagerT AI { get; private set; }
-    [field: SerializeField] public float _time { get; private set; }
+    [field: SerializeField] public float Time { get; private set; }
 
     [SerializeField] UnitT _unitPreefab;
-
     [SerializeField] Canvas _canvas;
-
     [SerializeField] MessageBox _messageBoxPrefab;
-
     [SerializeField] List<UnitT> _playerUnits;
     [SerializeField] List<UnitT> _aiUnits;
 
+    public float PowerBallance
+    {
+        get
+        {
+            float playerPowers = 0;
+            foreach (var unit in Player.MyUnits) playerPowers += unit.Warriors.Count;
+            float aiPowers = 0;
+            foreach (var unit in AI.MyUnits) aiPowers += unit.Warriors.Count;
+
+            return playerPowers / (playerPowers + aiPowers);
+        }
+
+    }
+    public Character Lider
+    {
+        get
+        {
+            if (PowerBallance > 0.5)
+            {
+                return Player.Character;
+            }
+            else if (PowerBallance < 0.5)
+            {
+                return AI.Character;
+            }
+
+            return null;
+        }
+
+    }
+
     private void Start()
     {
-        Debug.Log("Scene Manager Start");
-
         GameManager gm = GameManager.Instance;
 
-        _time = gm.Time;
+        Time = gm.Time;
+        CurrentAction = CountDown;
 
         //create map
 
@@ -35,7 +62,8 @@ public class SceneTManager : Singleton<SceneTManager>
         AI.Inst(gm.AI.Character, _aiUnits, _playerUnits);
         
         SceneTActions.Instance.OnUnitsCreatedNotify();
-        
+        SceneTActions.Instance.OnUnitsChangedNotify();
+
     }
 
     List<UnitT> CreateUnitsT(CharacterManager characterManager, Transform[] mapTransforms)
@@ -63,26 +91,35 @@ public class SceneTManager : Singleton<SceneTManager>
             _aiUnits.Remove(unitT);
         }
 
-        Debug.Log("Destroy " + unitT.gameObject.name);
-        Destroy(unitT);
+        Destroy(unitT.gameObject);
+
+        SceneTActions.Instance.OnUnitsChangedNotify();
 
         WinnerStatusCheck();
     }
 
+    Action CurrentAction;
+
     private void Update()
     {
-        if (_time > 0)
-        {
-            _time -= Time.deltaTime;
-        }
-        else
-        {
-            OutOfTime();
-        }
+        CurrentAction?.Invoke();
+        
 
     }
 
-    public void OutOfTime()
+    void CountDown()
+    {
+        if (Time > 0)
+        {
+            Time -= UnityEngine.Time.deltaTime;
+        }
+        else
+        {
+            CurrentAction = TimeOut;
+        }
+    }
+
+    void TimeOut()
     {
         bool winStatus;
         if (Lider == null)
@@ -96,38 +133,9 @@ public class SceneTManager : Singleton<SceneTManager>
 
         WinMessage("Out of time\n", winStatus);
 
+        CurrentAction = null;
+
     }
-
-    public float PowerBallance
-    {
-        get
-        {
-            float playerPowers = 0;
-            foreach (var unit in Player.MyUnits) playerPowers += unit.Warriors.Count;
-            float aiPowers = 0;
-            foreach (var unit in AI.MyUnits) aiPowers += unit.Warriors.Count;
-
-            return playerPowers / (playerPowers + aiPowers);
-        }
-    }
-
-    public Character Lider
-    {
-        get
-        {
-            if (PowerBallance > 0.5)
-            {
-                return Player.Character;
-            }
-            else if (PowerBallance < 0.5)
-            {
-                return AI.Character;
-            }
-
-            return null;
-        }
-        
-    } 
 
     public void WinnerStatusCheck()
     {
@@ -164,12 +172,12 @@ public class SceneTManager : Singleton<SceneTManager>
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated; ;
+        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated;
     }
 
     private void OnDisable()
     {
-        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated; ;
+        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated;
     }
 
     #endregion

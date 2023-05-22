@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class UnitsTDisplay : MonoBehaviour
@@ -10,29 +11,10 @@ public class UnitsTDisplay : MonoBehaviour
     [SerializeField] GameObject _cardPrefab;
 
     [SerializeField] List<UnitTCard> _cards;
-    public List<Vector2> Positions(int count)
-    {
-        List<Vector2> result = new();
-
-        float step = _size / 2;
-        float min = -_size / 2;
-
-        for (int i = 0; i < count; i++)
-        {
-            result.Add( new Vector2(min + (step * i), 0));
-        }
-
-        return result;
-
-    }
     
     void UpdateCards()
-    {        
-        if (_cards != null)
-        {
-            foreach (var card in _cards) Destroy(card.gameObject);
-        }
-        _cards = new();
+    {
+        Clear();
 
         int spacesNumber = 2;
         float step = _size / spacesNumber;
@@ -41,15 +23,23 @@ public class UnitsTDisplay : MonoBehaviour
         for (int i = 0; i < _characterManager.MyUnits.Count; i++)
         {
             Vector3 position = _rectTransform.position + (Vector3.right * (minPos + (step * i))) * _canvas.scaleFactor;
-            var unitCard = Instantiate(_cardPrefab.gameObject, position, transform.rotation, transform).GetComponent<UnitTCard>();
-            unitCard.Inst(_characterManager.MyUnits[i]);
+            _cards.Add ( Instantiate(_cardPrefab.gameObject, position, transform.rotation, transform).GetComponent<UnitTCard>());
+            _cards.Last().Inst(_characterManager.MyUnits[i]);
         }
 
+        SceneTActions.Instance.OnUnitsCreated -= UpdateCards;
     }
 
-    void RemoveCard(UnitT unit)
+    void Clear()
     {
-        UpdateCards();
+        foreach (var card in _cards)
+        {
+            Debug.Log(card.name + " is destroyed");
+            Destroy(card.gameObject);
+        }
+
+        _cards = new();
+
     }
 
     #region OnEnable/OnDisable
@@ -57,14 +47,12 @@ public class UnitsTDisplay : MonoBehaviour
     private void OnEnable()
     {
         SceneTActions.Instance.OnUnitsCreated += UpdateCards;
-        SceneTActions.Instance.OnUnitDefeated += RemoveCard;
-
+        //SceneTActions.Instance.OnUnitsChanged += UpdateCards;
     }
 
     private void OnDisable()
     {
-        SceneTActions.Instance.OnUnitsCreated -= UpdateCards;
-        SceneTActions.Instance.OnUnitDefeated -= RemoveCard;
+        //SceneTActions.Instance.OnUnitsChanged -= UpdateCards;
     }
 
     #endregion

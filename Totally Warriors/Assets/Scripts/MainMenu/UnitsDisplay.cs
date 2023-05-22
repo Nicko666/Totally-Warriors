@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -19,13 +18,9 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
     public void Inst(CharacterManager characterManager)
     {
         _characterManager = characterManager;
-    }
-
-    private void OnEnable()
-    {
-        _unitCards = new List<UnitCard>();
         _characterManager.ChangeAction = UpdateData;
         UpdateData();
+        
     }
 
     private void OnDisable()
@@ -77,9 +72,10 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
         float step = _size / spacesNumber;
         float minPos = -_size / spacesNumber;
 
+        _characterName.text = _characterManager.Character.Name;
+        
         for (int i = 0; i < _characterManager.Units.Count; i++)
         {
-            _characterName.text = _characterManager.Character.Name;
             Vector3 position = _rectTransform.position + (Vector3.right * ( minPos + (step * i))) * _canvas.scaleFactor;
             var temp = Instantiate(_unitCardPreefab.gameObject, position, transform.rotation, transform).GetComponent<UnitCard>();
             temp.Inst(_characterManager.Units[i], _characterManager.Character.Color);
@@ -91,9 +87,12 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     void ClearData()
     {
-        foreach (UnitCard card in _unitCards)
+        if (_unitCards != null)
         {
-            Destroy(card.gameObject);
+            foreach (UnitCard card in _unitCards)
+            {
+                Destroy(card.gameObject);
+            }
         }
         _unitCards = new List<UnitCard>();
     }
