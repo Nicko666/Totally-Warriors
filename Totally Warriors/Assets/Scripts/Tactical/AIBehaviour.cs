@@ -64,15 +64,15 @@ public class AIBehaviour : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitDefeated += OnAnyUnitDefited;
-        SceneTActions.Instance.OnUnitsCreated += OnUnitsCreated;
+        SceneTActions.Instance.OnUnitTDefeated += OnAnyUnitDefited;
+        SceneTActions.Instance.OnUnitsTCreated += OnUnitsCreated;
 
     }
 
     private void OnDisable()
     {
-        SceneTActions.Instance.OnUnitDefeated -= OnAnyUnitDefited;
-        SceneTActions.Instance.OnUnitsCreated -= OnUnitsCreated;
+        SceneTActions.Instance.OnUnitTDefeated -= OnAnyUnitDefited;
+        SceneTActions.Instance.OnUnitsTCreated -= OnUnitsCreated;
 
     }
 

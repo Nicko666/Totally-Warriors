@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 
 public class UnitT : MonoBehaviour
@@ -93,6 +92,7 @@ public class UnitT : MonoBehaviour
                 break;
 
         }
+    
     }
 
     
@@ -141,6 +141,8 @@ public class UnitT : MonoBehaviour
 
         Warriors.Remove(warrior);
         Destroy(warrior.gameObject);
+
+        SceneTActions.Instance.OnWarriorDefeatedNotify();
 
         if (Warriors == null || Warriors.Count < 1)
         {

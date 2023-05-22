@@ -19,20 +19,11 @@ public class UnitShop : MonoBehaviour
     {
         updateData();
 
-        _card.BeginDrag += OnBeginDragCard;
-        _card.Drag += OnDragCard;
-        _card.EndDrag += OnEndDragCard;
-        _card.PointerClick += ChangeUnit;
+        _card.BeginDrag = OnBeginDragCard;
+        _card.Drag = OnDragCard;
+        _card.EndDrag = OnEndDragCard;
+        _card.PointerClick = ChangeUnit;
     }
-
-    private void OnDisable()
-    {
-        _card.BeginDrag -= OnBeginDragCard;
-        _card.Drag -= OnDragCard;
-        _card.EndDrag -= OnEndDragCard;
-        _card.PointerClick -= ChangeUnit;
-    }
-
 
     void OnBeginDragCard(UnitCard card) => card.canvasGroup.blocksRaycasts = false;
 
@@ -50,8 +41,8 @@ public class UnitShop : MonoBehaviour
 
     public void ChangeUnit(UnitCard card)
     {
-        currentUnit = Mathf.RoundToInt(Mathf.Repeat(++currentUnit, BattleManager.Instance.UnitTypes.Count));
-        _unit.UnitType = BattleManager.Instance.UnitTypes[currentUnit];
+        currentUnit = Mathf.RoundToInt(Mathf.Repeat(++currentUnit, BattleMenu.Instance.UnitTypes.Count));
+        _unit.UnitType = BattleMenu.Instance.UnitTypes[currentUnit];
         _unit.ResetWarriors(new(1) { _unit.UnitType.MaxHealth });
         updateData();
 

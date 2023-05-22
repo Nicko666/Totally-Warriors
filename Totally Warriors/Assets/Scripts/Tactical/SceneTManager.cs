@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
 public class SceneTManager : Singleton<SceneTManager>
 {
@@ -142,13 +145,12 @@ public class SceneTManager : Singleton<SceneTManager>
         if (Player.MyUnits.Count <= 0)
         {
             WinMessage($"{AI.Character.Name} wins\n", false);
-
         }
         else if (AI.MyUnits.Count <= 0)
         {
             WinMessage("Enemy Defeated\n", true);
-
         }
+
     }
 
     public void WinMessage(string stage, bool win)
@@ -164,20 +166,28 @@ public class SceneTManager : Singleton<SceneTManager>
     void OnEnd()
     {
         GameManager.Instance.LoadNewScene("MainMenu");
-        //CurrentMessageBox.Click -= OnEnd;
 
+    }
+
+    void OnEscape()
+    {
+        OnEnd();
     }
 
     #region OnEnable/OnDisable
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated;
+        SceneTActions.Instance.OnUnitTDefeated += OnUnitDefeated;
+        InputManager.Instance.OnEscape += OnEscape;
+
     }
 
     private void OnDisable()
     {
-        SceneTActions.Instance.OnUnitDefeated += OnUnitDefeated;
+        SceneTActions.Instance.OnUnitTDefeated -= OnUnitDefeated;
+        InputManager.Instance.OnEscape -= OnEscape;
+
     }
 
     #endregion

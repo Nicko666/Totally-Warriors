@@ -17,13 +17,6 @@ public class UnitCard : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndD
     public Action<UnitCard, PointerEventData> Drag;
     public Action<UnitCard> EndDrag;
 
-    void Awake()
-    {
-        rectTransform = GetComponent<RectTransform>();
-        canvasGroup = GetComponent<CanvasGroup>();
-
-    }
-
     public void OnPointerClick(PointerEventData eventData) => PointerClick?.Invoke(this);
     public void OnBeginDrag(PointerEventData eventData) => BeginDrag?.Invoke(this);
     public void OnDrag(PointerEventData eventData) => Drag?.Invoke(this, eventData);
@@ -31,6 +24,9 @@ public class UnitCard : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndD
 
     public void Inst(Unit unit, Color color)
     {
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+
         Unit = unit;
 
         foreach (Slider slider in _healthSlider)
@@ -49,7 +45,5 @@ public class UnitCard : MonoBehaviour, IPointerClickHandler, IDragHandler, IEndD
         _image.sprite = unit.UnitType.Icon;
 
     }
-
-
 
 }

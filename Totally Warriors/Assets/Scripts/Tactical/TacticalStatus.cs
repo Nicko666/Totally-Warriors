@@ -11,8 +11,9 @@ public class TacticalStatus : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitsCreated += SetColors;
-        SceneTActions.Instance.OnUnitsCreated += SetNumber;
+        SceneTActions.Instance.OnUnitsTCreated += SetColors;
+        SceneTActions.Instance.OnUnitsTCreated += SetNumber;
+        SceneTActions.Instance.OnWarriorDefeated += SetNumber;
 
     }
 

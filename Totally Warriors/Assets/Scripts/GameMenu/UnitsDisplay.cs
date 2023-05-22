@@ -9,6 +9,7 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
     [SerializeField] CharacterManager _characterManager;
     [SerializeField] UnitCard _unitCardPreefab;
     [SerializeField] TMP_Text _characterName;
+    [SerializeField] TMP_Text _characterImage;
     [SerializeField] RectTransform _rectTransform;
 
     List<UnitCard> _unitCards;
@@ -18,15 +19,19 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
     public void Inst(CharacterManager characterManager)
     {
         _characterManager = characterManager;
-        _characterManager.ChangeAction = UpdateData;
+        _characterManager.ChangeAction += UpdateData;
         UpdateData();
         
     }
 
     private void OnDisable()
     {
-        _characterManager.ChangeAction -= UpdateData;
-        ClearData();
+        if ( _characterManager != null )
+        {
+            _characterManager.ChangeAction -= UpdateData;
+
+        }
+        //ClearData();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -48,7 +53,7 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
     void ChangeCharacter()
     {
         Character currentCharacter = _characterManager.Character;
-        _characterManager.ChangeCharacter(BattleManager.Instance.GetNextCharacter(currentCharacter));
+        _characterManager.ChangeCharacter(BattleMenu.Instance.GetNextCharacter(currentCharacter));
 
     }
 
@@ -73,6 +78,7 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
         float minPos = -_size / spacesNumber;
 
         _characterName.text = _characterManager.Character.Name;
+        _characterImage.color = _characterManager.Character.Color;
         
         for (int i = 0; i < _characterManager.Units.Count; i++)
         {

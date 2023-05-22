@@ -2,27 +2,35 @@ using System;
 
 public class SceneTActions : Singleton<SceneTActions>
 {
-    public Action OnUnitsCreated;
+    public Action OnUnitsTCreated;
 
-    public Action OnUnitsChanged;
+    public Action OnUnitTChanged;
 
-    public Action<UnitT> OnUnitDefeated;
+    public Action OnWarriorDefeated;
+
+    public Action<UnitT> OnUnitTDefeated;
 
     public void OnUnitsCreatedNotify()
     {
-        OnUnitsCreated?.Invoke();
+        OnUnitsTCreated?.Invoke();
 
     }
 
     public void OnUnitsChangedNotify()
     {
-        OnUnitsChanged?.Invoke();
+        OnUnitTChanged?.Invoke();
+
+    }
+
+    public void OnWarriorDefeatedNotify()
+    {
+        OnWarriorDefeated?.Invoke();
 
     }
 
     public void OnUnitDefeatedNotify(UnitT unitT)
     {
-        OnUnitDefeated?.Invoke(unitT);
+        OnUnitTDefeated?.Invoke(unitT);
 
     }
 

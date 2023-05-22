@@ -27,7 +27,7 @@ public class UnitsTDisplay : MonoBehaviour
             _cards.Last().Inst(_characterManager.MyUnits[i]);
         }
 
-        SceneTActions.Instance.OnUnitsCreated -= UpdateCards;
+        SceneTActions.Instance.OnUnitsTCreated -= UpdateCards;
     }
 
     void Clear()
@@ -46,7 +46,7 @@ public class UnitsTDisplay : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitsCreated += UpdateCards;
+        SceneTActions.Instance.OnUnitsTCreated += UpdateCards;
         //SceneTActions.Instance.OnUnitsChanged += UpdateCards;
     }
 

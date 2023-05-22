@@ -15,7 +15,7 @@ public class PlayerInputT : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneTActions.Instance.OnUnitsCreated += OnUnitCreated;
+        SceneTActions.Instance.OnUnitsTCreated += OnUnitCreated;
         SceneTManager.Instance.Map.Click += OnMapClick;
     }
 
@@ -43,12 +43,12 @@ public class PlayerInputT : MonoBehaviour
         foreach (var unit in characterManager.MyUnits)
         {
             unit.ClickAction += OnPlayerUnitClick;
-            SceneTActions.Instance.OnUnitDefeated += Deselect;
+            SceneTActions.Instance.OnUnitTDefeated += Deselect;
         }
         foreach (var unit in characterManager.EnemyUnits)
         {
             unit.ClickAction += OnAIUnitClick;
-            SceneTActions.Instance.OnUnitDefeated += Deselect;
+            SceneTActions.Instance.OnUnitTDefeated += Deselect;
         }
 
     }
