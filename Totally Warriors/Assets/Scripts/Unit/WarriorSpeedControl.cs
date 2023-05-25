@@ -17,6 +17,8 @@ public class WarriorSpeedControl : MonoBehaviour
 
     void Update()
     {
+        if (!_agent.enabled) return;
+
         NavMeshHit hit;
 
         if (!_agent.SamplePathPosition(NavMesh.AllAreas, 1.0f, out hit))

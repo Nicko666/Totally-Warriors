@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,11 +31,18 @@ public class UnitTCard : MonoBehaviour, IPointerClickHandler
 
         UnitT.Selected += Highlite;
         UnitT.UnitTakeDamageAction += UpdateHealthData;
+
     }
 
     public void UpdateHealthData(List<int> health)
     {
         foreach (Slider slider in _healthSlider) slider.gameObject.SetActive(false);
+
+        if (UnitT == null || health.Count < 1 || health.Sum() <= 0)
+        {
+            OnDefeated();
+            return;
+        }
 
         for (int n = 0; n < health.Count; n++)
         {
@@ -42,10 +50,6 @@ public class UnitTCard : MonoBehaviour, IPointerClickHandler
             _healthSlider[n].value = health[n];
         }
 
-        if (UnitT == null | UnitT.Warriors.Count < 1)
-        {
-            OnDefeated();
-        }
 
     }
 

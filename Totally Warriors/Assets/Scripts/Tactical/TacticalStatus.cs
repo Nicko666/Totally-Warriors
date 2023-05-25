@@ -9,14 +9,6 @@ public class TacticalStatus : MonoBehaviour
     [SerializeField] Slider _slider;
     [SerializeField] TMP_Text _text;
 
-    private void OnEnable()
-    {
-        SceneTActions.Instance.OnUnitsTCreated += SetColors;
-        SceneTActions.Instance.OnUnitsTCreated += SetNumber;
-        SceneTActions.Instance.OnWarriorDefeated += SetNumber;
-
-    }
-
     private void Update()
     {
         ShowTime(SceneTManager.Instance.Time);
@@ -33,10 +25,30 @@ public class TacticalStatus : MonoBehaviour
 
     public void ShowTime(float time)
     {
-        int timeLeft = Mathf.FloorToInt(time);
+        int timeLeft = Mathf.FloorToInt(time) + 1;
 
         _text.text = timeLeft.ToString();
 
     }
+
+    #region OnEnable/OnDisable
+
+    private void OnEnable()
+    {
+        SceneTActions.Instance.OnUnitsTCreated += SetColors;
+        SceneTActions.Instance.OnUnitsTCreated += SetNumber;
+        SceneTActions.Instance.OnWarriorDefeated += SetNumber;
+
+    }
+    
+    private void OnDisable()
+    {
+        SceneTActions.Instance.OnUnitsTCreated -= SetColors;
+        SceneTActions.Instance.OnUnitsTCreated -= SetNumber;
+        SceneTActions.Instance.OnWarriorDefeated -= SetNumber;
+    
+    }
+
+    #endregion
 
 }

@@ -7,6 +7,7 @@ public class Warrior : MonoBehaviour
 {
     [SerializeField] ColorSprites _colorSprites;
     [SerializeField] NavMeshAgent _agent;
+    [SerializeField] NavMeshObstacle _obstacle;
     [SerializeField] FloatingNunber _floatingNumberPrefab;
     [SerializeField] LandMarck _destanationLandMarckPrefab;
     [SerializeField] WarriorSpeedControl _warriorSpeedControl;
@@ -42,7 +43,19 @@ public class Warrior : MonoBehaviour
             return enemies;
         }
     }
-    public bool GotDestination => _agent.remainingDistance < 0.1f;
+    public bool GotDestination
+    {
+        get
+        {
+            bool result = false;
+            if (_agent.remainingDistance < 0.1f)
+            {
+                result = true;
+                
+            }
+            return result;
+        }
+    }
 
     float _lastAttacTime;
 
@@ -78,24 +91,39 @@ public class Warrior : MonoBehaviour
     {
         if (warriors.Count < 1) return null;
 
-        var result = warriors[0];
+        Vector3 currentDestanation = _agent.destination;
 
-        foreach (var warrior in warriors)
+        Warrior result = warriors[0];
+        _agent.SetDestination(warriors[0].transform.position);
+        float minDistance = _agent.remainingDistance;
+        for (int i = 1; i < warriors.Count; i++)
         {
-            if (
-                (warrior.transform.position - this.transform.position).sqrMagnitude <
-                (result.transform.position - warrior.transform.position).sqrMagnitude
-                )
-                result = warrior;
-
+            _agent.SetDestination(warriors[i].transform.position);
+            float distance = _agent.remainingDistance;
+            if (distance < minDistance) result = warriors[i];
         }
+
+        _agent.destination = currentDestanation;
 
         return result;
     }
 
     public void MoveTo(Vector3 target)
     {
+        Debug.Log("change to Target");
+        _obstacle.enabled = false;
+        _agent.enabled = true;
         _agent.SetDestination(target);
+
+        //if (GotDestination) Stop();
+    }
+
+    public void Stop()
+    {
+        //_agent.SetDestination(_agent.transform.position);
+        _agent.enabled = false;
+        _obstacle.enabled = true;
+        Debug.Log("stop");
     }
 
     public void RotateTo(Vector3 position)

@@ -8,24 +8,26 @@ public class WarriorRadius : MonoBehaviour
     [SerializeField] Color _move;
     [SerializeField] Color _attack;
 
-    private void Start()
+    private void OnEnable()
     {
-        _warrior.UnitT.ChangeBehavior += ChangeBehavior;
-
-        float radius = _warrior.UnitT.UnitType.Distance;
-        transform.localScale = Vector3.one * radius * 2;
-
-        ChangeBehavior(_warrior.UnitT.UnitBehavior);
-
+        SceneTActions.Instance.OnGismosSwitch += OnGismosSwitch;
+        SceneTActions.Instance.OnUnitsTCreated += OnUnitsTCreated;
     }
 
-    private void OnDestroy()
-    {
-        _warrior.UnitT.ChangeBehavior -= ChangeBehavior;
+    public void OnGismosSwitch(bool value) => _spriteRenderer.enabled = value;
 
+    public void OnUnitsTCreated()
+    {
+        var unit = _warrior.UnitT;
+        transform.localScale = Vector3.one * unit.UnitType.Distance * 2;
+        OnChangeBehavior(unit.UnitBehavior);
+
+        unit.ChangeBehavior += OnChangeBehavior;
+        SceneTActions.Instance.OnUnitsTCreated -= OnUnitsTCreated;
+    
     }
 
-    public void ChangeBehavior(UnitTBehavior behavior)
+    public void OnChangeBehavior(UnitTBehavior behavior)
     {
         switch (behavior)
         {
@@ -41,6 +43,11 @@ public class WarriorRadius : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        _warrior.UnitT.ChangeBehavior -= OnChangeBehavior;
+        SceneTActions.Instance.OnGismosSwitch -= OnGismosSwitch;
 
-    
+    }
+
 }

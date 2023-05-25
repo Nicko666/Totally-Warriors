@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class BattleMenu : Singleton<BattleMenu>
@@ -22,23 +19,27 @@ public class BattleMenu : Singleton<BattleMenu>
 
     public Character GetNextCharacter(Character current)
     {
-        int currentNumber = Characters.IndexOf(current);
+        int newCharNum = Characters.IndexOf(current);
 
-        currentNumber = Mathf.RoundToInt(Mathf.Repeat(++currentNumber, Characters.Count));
+        do
+        {
+            newCharNum = Mathf.RoundToInt(Mathf.Repeat(++newCharNum, Characters.Count));
+        }
+        while (Characters[newCharNum] == GameManager.Instance.Player.Character || Characters[newCharNum] == GameManager.Instance.AI.Character);
 
-        return Characters[currentNumber];
+        return Characters[newCharNum];
 
     }
 
     public void OnBattle()
     {
-        GameManager.Instance.LoadNewScene("Tactical");
+        MySceneManager.LoadScene("Tactical");
 
     }
 
     public void OnBack() 
     {
-        GameMenuManager.Instance.SwitchMenu("MainMenu");
+        MySceneManager.LoadScene("MainMenu");
 
     }
 

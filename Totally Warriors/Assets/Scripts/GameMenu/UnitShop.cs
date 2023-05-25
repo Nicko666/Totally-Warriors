@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class UnitShop : MonoBehaviour
 {
-    [SerializeField] Canvas canvas;
-    [SerializeField] int currentUnit;
+    [SerializeField] Canvas _canvas;
+    int _currentUnit;
     [SerializeField] Color _color;
     [SerializeField] UnitCard _card;
     [SerializeField] Unit _unit;
@@ -25,24 +25,29 @@ public class UnitShop : MonoBehaviour
         _card.PointerClick = ChangeUnit;
     }
 
-    void OnBeginDragCard(UnitCard card) => card.canvasGroup.blocksRaycasts = false;
+    void OnBeginDragCard(UnitCard card)
+    { 
+        card.transform.SetParent(_canvas.gameObject.transform);
+        card.canvasGroup.blocksRaycasts = false; 
+    }
 
     void OnDragCard(UnitCard card, PointerEventData eventData)
     {
-        card.rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        card.rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
     }
 
     void OnEndDragCard(UnitCard card)
     {
         card.canvasGroup.blocksRaycasts = true;
+        card.transform.SetParent(gameObject.transform);
         card.rectTransform.localPosition = Vector3.zero;
 
     }
 
     public void ChangeUnit(UnitCard card)
     {
-        currentUnit = Mathf.RoundToInt(Mathf.Repeat(++currentUnit, BattleMenu.Instance.UnitTypes.Count));
-        _unit.UnitType = BattleMenu.Instance.UnitTypes[currentUnit];
+        _currentUnit = Mathf.RoundToInt(Mathf.Repeat(++_currentUnit, BattleMenu.Instance.UnitTypes.Count));
+        _unit.UnitType = BattleMenu.Instance.UnitTypes[_currentUnit];
         _unit.ResetWarriors(new(1) { _unit.UnitType.MaxHealth });
         updateData();
 

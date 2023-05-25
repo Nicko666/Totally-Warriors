@@ -19,25 +19,6 @@ public class PlayerInputT : MonoBehaviour
         SceneTManager.Instance.Map.Click += OnMapClick;
     }
 
-    private void OnDisable()
-    {
-        //SelectedUnits.Clear();
-
-        //foreach (var unit in characterManager.MyUnits)
-        //{
-        //    unit.ClickAction -= OnPlayerUnitClick;
-        //    SceneTActions.Instance.OnUnitDefeated -= Deselect;
-        //}
-        //foreach (var unit in characterManager.EnemyUnits)
-        //{
-        //    unit.ClickAction -= OnAIUnitClick;
-        //    SceneTActions.Instance.OnUnitDefeated -= Deselect;
-        //}
-
-        //SceneTManager.Instance.Map.Click -= OnMapClick;
-
-    }
-
     void OnUnitCreated()
     {
         foreach (var unit in characterManager.MyUnits)
@@ -52,9 +33,6 @@ public class PlayerInputT : MonoBehaviour
         }
 
     }
-
-
-
 
     void OnPlayerUnitClick(UnitT unitT)
     {
@@ -113,5 +91,25 @@ public class PlayerInputT : MonoBehaviour
         }
 
     }
+
+    //private void OnDisable()
+    //{
+    //    SelectedUnits.Clear();
+
+    //    foreach (var unit in characterManager.MyUnits)
+    //    {
+    //        unit.ClickAction -= OnPlayerUnitClick;
+    //        SceneTActions.Instance.OnUnitDefeated -= Deselect;
+    //    }
+    //    foreach (var unit in characterManager.EnemyUnits)
+    //    {
+    //        unit.ClickAction -= OnAIUnitClick;
+    //        SceneTActions.Instance.OnUnitDefeated -= Deselect;
+    //    }
+
+    //    SceneTManager.Instance.Map.Click -= OnMapClick;
+
+    //}
+
 
 }

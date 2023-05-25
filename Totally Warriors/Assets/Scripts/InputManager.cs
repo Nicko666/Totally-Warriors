@@ -1,23 +1,32 @@
 using System;
 using UnityEngine.InputSystem;
 
-public class InputManager : Singleton<InputManager>
+public class InputManager : AwakeSingleton<InputManager>
 {
-    private Controls controls;
+    public Controls controls;
 
-    private void Awake()
+    void OnEscapeNotify(InputAction.CallbackContext context) => OnEscape?.Invoke();
+
+    public Action OnEscape;
+    //public Action OnHome;
+    //public Action OnMenu;
+
+    private void OnEnable()
     {
         controls = new();
         controls.Enable();
         controls.AndroidInput.Escape.performed += OnEscapeNotify;
-
     }
 
-    public void OnEscapeNotify(InputAction.CallbackContext context) => OnEscape?.Invoke();
-
-    //public Action OnHome;
-    public Action OnEscape;
-    //public Action OnMenu;
+    private void OnDisable()
+    {
+        if (controls != null) 
+        {
+            controls.AndroidInput.Escape.performed -= OnEscapeNotify;
+            controls.Disable();
+            controls = null;
+        }
+    }
 
 }
 

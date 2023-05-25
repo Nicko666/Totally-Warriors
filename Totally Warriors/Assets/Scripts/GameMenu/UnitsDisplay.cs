@@ -41,11 +41,11 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag != null)
-        {
-            var card = eventData.pointerDrag.GetComponent<UnitCard>();
-            AddUnit(card);
+        UnitCard card;
 
+        if (eventData.pointerDrag.TryGetComponent<UnitCard>(out card))
+        {
+            AddUnit(card);
         }
 
     }
@@ -59,7 +59,8 @@ public class UnitsDisplay : MonoBehaviour, IDropHandler, IPointerClickHandler
 
     public void AddUnit(UnitCard card)
     {
-        _characterManager.AddUnit(card.Unit);
+        if (!_characterManager.Units.Contains(card.Unit))
+            _characterManager.AddUnit(card.Unit);
 
     }
 

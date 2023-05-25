@@ -1,6 +1,7 @@
+using System.Linq;
 using UnityEngine;
 
-public class AIBehaviour : MonoBehaviour
+public class AITBehaviour : MonoBehaviour
 {
     [SerializeField] CharacterManagerT characterManager;
     IUnitFormation _unitFormation;
@@ -32,29 +33,33 @@ public class AIBehaviour : MonoBehaviour
         void AttackBehavior()
         {
             //Debug.Log("AI Attack mod");
-            //UnitT mainEnemy = _sceneManager.PlayerUnits.First();
-            //foreach (UnitT unit in _sceneManager.PlayerUnits)
-            //{
-            //    //if (mainEnemy.WarriorsHealth[0] > unit.WarriorsHealth[0])
-            //    //{
-            //    //    mainEnemy = unit;
-            //    //}
-            //}
 
-            //foreach (UnitT unit in _sceneManager.AIUnits)
-            //{
-            //    unit.SetAttackBehavior(mainEnemy);
-            //}
+            if (characterManager.EnemyUnits == null || characterManager.EnemyUnits.Count < 1) return;
+
+            UnitT mainEnemy = characterManager.EnemyUnits.First();
+            foreach (UnitT unit in characterManager.EnemyUnits)
+            {
+                if (mainEnemy.WarriorsHealth.Sum() > unit.WarriorsHealth.Sum())
+                {
+                    mainEnemy = unit;
+                }
+            }
+
+            foreach (UnitT unit in characterManager.MyUnits)
+            {
+                unit.SetAttackBehavior(mainEnemy);
+            }
 
         }
 
         void ProtectBehavior()
         {
             //Debug.Log("AI Protect mod");
-            //foreach (UnitT unit in _sceneManager.AIUnits)
-            //{
-            //    unit.SetProtectBehavior(unit.UnitCenter);
-            //}
+
+            foreach (UnitT unit in characterManager.MyUnits)
+            {
+                unit.SetProtectBehavior(unit.UnitCenter);
+            }
 
         }
     }
@@ -69,12 +74,12 @@ public class AIBehaviour : MonoBehaviour
 
     }
 
-    private void OnDisable()
-    {
-        SceneTActions.Instance.OnUnitTDefeated -= OnAnyUnitDefited;
-        SceneTActions.Instance.OnUnitsTCreated -= OnUnitsCreated;
+    //private void OnDisable()
+    //{
+    //    SceneTActions.Instance.OnUnitTDefeated -= OnAnyUnitDefited;
+    //    SceneTActions.Instance.OnUnitsTCreated -= OnUnitsCreated;
 
-    }
+    //}
 
     #endregion
 

@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.U2D.Path.GUIFramework;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputAction;
 
 public class SceneTManager : Singleton<SceneTManager>
 {
@@ -131,7 +128,7 @@ public class SceneTManager : Singleton<SceneTManager>
         }
         else
         {
-            winStatus = Lider == Player;
+            winStatus = (Lider == Player.Character);
         }
 
         WinMessage("Out of time\n", winStatus);
@@ -165,7 +162,7 @@ public class SceneTManager : Singleton<SceneTManager>
 
     void OnEnd()
     {
-        GameManager.Instance.LoadNewScene("MainMenu");
+        MySceneManager.LoadScene("MainMenu");
 
     }
 
@@ -185,8 +182,12 @@ public class SceneTManager : Singleton<SceneTManager>
 
     private void OnDisable()
     {
-        SceneTActions.Instance.OnUnitTDefeated -= OnUnitDefeated;
-        InputManager.Instance.OnEscape -= OnEscape;
+        var instance = SceneTActions.Instance;
+        if (instance != null)
+        {
+            SceneTActions.Instance.OnUnitTDefeated -= OnUnitDefeated;
+            InputManager.Instance.OnEscape -= OnEscape;
+        }
 
     }
 

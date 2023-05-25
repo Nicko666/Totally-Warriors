@@ -17,7 +17,7 @@ MonoBehaviour:
   <MaxNumber>k__BackingField: 3
   <Strength>k__BackingField: 4
   <Speed>k__BackingField: 3
-  <Distance>k__BackingField: 1.5
+  <Distance>k__BackingField: 2
   <StrikeInterval>k__BackingField: 1.5
   <Icon>k__BackingField: {fileID: -1384544111, guid: b4319ba301ea7bf4fbe56f733558ef19, type: 3}
-  <WarriorPreefab>k__BackingField: {fileID: 4849324783783834770, guid: 2788f3324abd70342a9d736dd5615fdb, type: 3}
+  <WarriorPreefab>k__BackingField: {fileID: 3183936673052954206, guid: 9415a48a0d38d314bb6d1e6627a94fc8, type: 3}

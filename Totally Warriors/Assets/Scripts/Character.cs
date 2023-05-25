@@ -6,6 +6,6 @@ public class Character : ScriptableObject
 {
     [field: SerializeField] public string Name { get; private set; }
     [field: SerializeField] public Color Color { get; private set; }
-    [field: SerializeField] public AIBehaviour AIBehaviour { get; private set; }
+    [field: SerializeField] public AITBehaviour AIBehaviour { get; private set; }
 
 }

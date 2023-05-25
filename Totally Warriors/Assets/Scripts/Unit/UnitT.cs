@@ -62,6 +62,7 @@ public class UnitT : MonoBehaviour
 
     }
 
+
     public Action<UnitT> ClickAction; 
 
     public Action<bool> Selected;
@@ -135,6 +136,8 @@ public class UnitT : MonoBehaviour
 
     void RemoveWarrior(Warrior warrior)
     {
+        UnitTakeDamageAction?.Invoke(WarriorsHealth);
+
         warrior.OnWarriorTakeDamage -= OnTakeDamage;
         warrior.OnWarriorAttackedBy -= OnAttackedBy;
         warrior.OnWarriorDefeated -= RemoveWarrior;
@@ -180,7 +183,7 @@ public class UnitT : MonoBehaviour
         }
 
         UnitBehavior = UnitTBehavior.Protect;
-        ChangeBehavior!.Invoke(UnitTBehavior.Protect);
+        ChangeBehavior?.Invoke(UnitTBehavior.Protect);
     }
 
     void ProtectBehavior()
@@ -208,7 +211,7 @@ public class UnitT : MonoBehaviour
         }
 
         UnitBehavior = UnitTBehavior.Move;
-        ChangeBehavior!.Invoke(UnitTBehavior.Move);
+        ChangeBehavior?.Invoke(UnitTBehavior.Move);
 
     }
 
@@ -237,7 +240,7 @@ public class UnitT : MonoBehaviour
     {
         Enemy = enemy;
         UnitBehavior = UnitTBehavior.Attack;
-        ChangeBehavior!.Invoke(UnitTBehavior.Attack);
+        ChangeBehavior?.Invoke(UnitTBehavior.Attack);
 
     }
 
@@ -258,7 +261,9 @@ public class UnitT : MonoBehaviour
             }
             else
             {
-                warrior.MoveTo(warrior.SelectClosest(Enemy.Warriors).transform.position);
+                var enemy = warrior.SelectClosest(Enemy.Warriors);
+                if (enemy != null)
+                    warrior.MoveTo(enemy.transform.position);
             }
         }
 
